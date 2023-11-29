@@ -15,17 +15,13 @@ public class KinoListBot extends TelegramLongPollingBot {
     @Value("${bot.name}")
     private String botName;
 
-    @Value("${bot.token}")
-    private String botToken;
+    public KinoListBot(@Value("${bot.token}") String botToken) {
+        super(botToken);
+    }
 
     @Override
     public String getBotUsername() {
         return botName;
-    }
-
-    @Override
-    public String getBotToken() {
-        return botToken;
     }
 
     @Override
