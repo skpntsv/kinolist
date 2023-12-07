@@ -12,8 +12,7 @@
         <jdk.version>21</jdk.version>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
-        <telegrambot.starter.version>6.1.0</telegrambot.starter.version>
-        <log4j.version>1.2.17</log4j.version>
+        <telegrambot.starter.version>6.8.0</telegrambot.starter.version>
         <lombok.servion>1.18.30</lombok.servion>
     </properties>
 
@@ -38,12 +37,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
         </dependency>
 
         <dependency>
