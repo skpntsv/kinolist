@@ -13,7 +13,6 @@
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
         <telegrambot.starter.version>6.8.0</telegrambot.starter.version>
-        <log4j.version>2.22.0</log4j.version>
         <lombok.servion>1.18.30</lombok.servion>
     </properties>
 
