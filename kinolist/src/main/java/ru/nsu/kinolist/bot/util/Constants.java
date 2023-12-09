@@ -3,6 +3,7 @@ package ru.nsu.kinolist.bot.util;
 public class Constants {
     public static final String START_COMMAND_TEXT = "Начало работы";
     public static final String HELP_COMMAND_TEXT = "Помощь";
+    public static final String SHOW_PLAYLISTS_COMMAND_TEXT = "Показать мои плейлисты";
     public static final String START_MESSAGE = """
                 **Добро пожаловать в бот, %s!**
                 
