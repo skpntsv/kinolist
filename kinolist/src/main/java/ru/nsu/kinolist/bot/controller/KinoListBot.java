@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -16,6 +17,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static ru.nsu.kinolist.bot.util.Constants.*;
 
 @Component
 @Slf4j
@@ -61,10 +64,8 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     private void addBotCommands(){
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand("/start", "get a welcome message"));
-        listOfCommands.add(new BotCommand("/help", "info how to use this bot"));
-        listOfCommands.add(new BotCommand("/add_film", "add film"));
-        listOfCommands.add(new BotCommand("/status", "get status"));
+        listOfCommands.add(new BotCommand("/start", START_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand("/help", HELP_COMMAND_TEXT));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -73,41 +74,33 @@ public class KinoListBot extends TelegramLongPollingBot {
     }
 
     private void startCommand(Long chatId, String userName) {
-        String text = """
-                **Добро пожаловать в бот, %s!**
-                
-                Здесь Вы сможете добавить фильм в wishlist.
-                Поставить напоминание о выходе новой серии
-                и не только...
-                
-                **Для этого воспользуйтесь командами:**
-                // TODO добавить команды
-                
-                **Дополнительные команды:**
-                /help - получение справки
-                """;
-        String formattedText = String.format(text, userName);
+        String formattedText = String.format(START_MESSAGE, userName);
 
         sendMessage(chatId, formattedText);
     }
 
     private void helpCommand(Long chatId) {
-        String text = """
-                **Справочная информация по боту**
-                
-                **Для добавления фильма в список желаемого воспользуйтесь:**
-                // TODO добавить команды
-                """;
-        sendMessage(chatId, text);
+        sendMessage(chatId, HELP_MESSAGE);
     }
 
     private void unknownCommand(Long chatId) {
-        String text = """
-                Не удалось распознать команду!
-                "Введите команда /help"
-                """;
+        sendMessage(chatId, UNKNOWN_MESSAGE);
+    }
 
-        sendMessage(chatId, text);
+    private void sendURLPhoto(Long chatId, String imageURL) {
+        // Создай объект SendPhoto
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setChatId(chatId.toString());
+
+        // Установи URL изображения
+        sendPhoto.setPhoto(new InputFile(imageURL));
+
+        try {
+            execute(sendPhoto);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+        }
+        log.info("Фотография [{}] успешно отправлено {}", imageURL, chatId);
     }
 
     private void sendMessage(long chatId, String textToSend) {
@@ -117,11 +110,18 @@ public class KinoListBot extends TelegramLongPollingBot {
         message.setChatId(chatId);
         message.setText(textToSend);
 
+        if (executeMessage(message)) {
+            log.info("Сообщение [{}] успешно отправлено {}", textToSend, chatId);
+        }
+    }
+
+    private boolean executeMessage(BotApiMethodMessage message) {
         try {
             execute(message);
+            return true;
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
         }
-        log.info("Сообщение [{}] отправлено {}", textToSend, chatId);
     }
 }
