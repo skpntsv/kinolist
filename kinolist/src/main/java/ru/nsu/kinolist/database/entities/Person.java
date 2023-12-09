@@ -15,21 +15,21 @@ public class Person {
     int userId;
     @Column(name = "chat_id")
     String chatId;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "Person_Film_Wish",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
     List<Film> wishList;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "Person_Film_Tracked",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
     List<Film> trackedList;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "Person_Film_Viewed",
             joinColumns = @JoinColumn(name = "user_id"),

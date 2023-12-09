@@ -15,15 +15,15 @@ public class Film {
     @Column(name = "name")
     String filmName;
     @Column(name = "year")
-    int releaseYear;
+    String releaseYear;
     @Column(name = "url")
     String url;
     @Column(name = "kinopoisk_id")
-    int kinopoiskId;
+    String kinopoiskId;
     @Column(name = "is_series")
-    boolean isSeries;
+    String isSeries;
     @Column(name = "rating")
-    double rating;
+    String rating;
     @Column(name = "annotation")
     String annotation;
     @ManyToMany(mappedBy = "wishList")

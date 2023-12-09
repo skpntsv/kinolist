@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.database.DAO;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,18 @@ public class PersonDAO {
         Person person = session.get(Person.class, userId);
         List<Film> filmList = null;
         switch (listType) {
-            case WISH -> filmList = person.getWishList();
-            case TRACKED -> filmList = person.getTrackedList();
-            case VIEWED -> filmList = person.getViewedList();
+            case WISH -> {
+                Hibernate.initialize(person.getWishList());
+                filmList = person.getWishList();
+            }
+            case TRACKED -> {
+                Hibernate.initialize(person.getTrackedList());
+                filmList = person.getTrackedList();
+            }
+            case VIEWED -> {
+                Hibernate.initialize(person.getViewedList());
+                filmList = person.getViewedList();
+            }
         }
         return filmList;
     }
