@@ -19,6 +19,7 @@ public class Constants {
     public static final String ADD_WISHLIST_COMMAND_TEXT = "Добавить в список желаемого";
     public static final String ADD_TRACKEDLIST_COMMAND_TEXT = "Добавить в список отслеживаемого";
     public static final String SEARCH_RANDOM_COMMAND_TEXT = "Найти случайный фильм";
+    public static final String REMOVE_FILM_COMMAND_TEXT = "Удалить фильм/сериал";
 
     public static final String START_MESSAGE = """
                 **Добро пожаловать в бот, %s!**

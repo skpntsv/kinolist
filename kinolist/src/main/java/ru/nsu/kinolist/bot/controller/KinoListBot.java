@@ -21,7 +21,6 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.nsu.kinolist.bot.util.BotState;
@@ -35,7 +34,7 @@ import static ru.nsu.kinolist.bot.util.Constants.*;
 @Component
 @Slf4j
 public class KinoListBot extends TelegramLongPollingBot {
-    private Map<Long, BotState> userStates = new ConcurrentHashMap<>();
+    private Map<Long, UserState> userStates = new ConcurrentHashMap<>();
     private static final String WISHLIST = "Список желаемого";
     private static final String WATCHED_LIST = "Список просмотренного";
     private static final String TRACKED_LIST = "Список отслеживаемого";
@@ -56,19 +55,16 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update request) {
-        if (request.hasMessage()) {
-            if (request.hasCallbackQuery()) {
-                log.info("get callback {}", request.getCallbackQuery().getData());
-                onCallbackQueryReceived(request.getCallbackQuery());
-            } else {
-                Message message = request.getMessage();
-                if (message != null && message.hasText()) {
-                    log.info("Working onUpdateReceived, request text[{}] from @{} - {}",
-                            request.getMessage().getText(), request.getMessage().getChat().getUserName(), request.getMessage().getChatId());
-                    onInputMessage(message);
-                }
+        if (request.hasCallbackQuery()) {
+            onCallbackQueryReceived(request.getCallbackQuery());
+        } else {
+            Message message = request.getMessage();
+            if (message != null && message.hasText()) {
+                onInputMessage(message);
             }
         }
+        if (!userStates.isEmpty())
+            log.info(userStates.toString());
     }
 
     private void onInputMessage(Message message) {
@@ -78,15 +74,36 @@ public class KinoListBot extends TelegramLongPollingBot {
         Long chatId = message.getChatId();
 
         switch (message.getText()) {
-            case START_COMMAND -> {
-                String userName = message.getChat().getFirstName();
-                startCommand(chatId, userName);
-            }
+            case START_COMMAND -> startCommand(chatId, message.getChat().getFirstName());
             case HELP_COMMAND -> helpCommand(chatId);
             case MAIN_MENU_COMMAND_TEXT, MENU_COMMAND -> showMainMenu(chatId);
             case SHOW_PLAYLISTS_COMMAND -> showPlaylistsInlineButtons(chatId);
-            default -> unknownCommand(chatId);
+            default -> handleUserInput(chatId, message.getText());
         }
+    }
+
+    private void handleUserInput(Long chatId, String userInput) {
+        log.info("Handling user input [{}] from @{} - {}", userInput, chatId);
+
+        UserState userState = userStates.get(chatId);
+        if (userState != null) {
+            switch (userState.getBotState()) {
+                case IDLE -> unknownCommand(chatId);
+                case AWAITING_INPUT -> handleAwaitingInput(chatId, userState, userInput);
+
+                default -> unknownCommand(chatId);
+            }
+        }
+    }
+
+    private void handleAwaitingInput(Long chatId, UserState userState, String userInput) {
+        sendAction(chatId, ActionType.TYPING);
+
+        sendMessage(chatId, "Поиск фильма...");
+        String film = findFilm(userInput);
+        sendMessage(chatId, "Фильм " + film + " найден и успешно добавлен");    // TODO тут должна отправляться красивая страница с фильмом и появлятся две кнопки "Добавить" и "Не добавлять"
+
+        userState.setBotState(BotState.IDLE);
     }
 
     private void onCallbackQueryReceived(CallbackQuery callbackQuery) {
@@ -106,13 +123,20 @@ public class KinoListBot extends TelegramLongPollingBot {
         }
     }
 
+    private String findFilm(String name) {
+        // TODO поиск фильма по названию
+
+        return "Слово пацана (1 сезон)";
+    }
     private void requestUserInput(Long chatId) {
+        UserState userState = userStates.get(chatId);
+
         String text = "Введите название фильма/сериала";
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
 
-        userStates.replace(chatId, BotState.IDLE, BotState.AWAITING_INPUT);
+        userState.setBotState(BotState.AWAITING_INPUT);
 
         if (executeMessage(message)) {
             log.info("Сообщение [{}] успешно отправлено {}", text, chatId);
@@ -132,8 +156,8 @@ public class KinoListBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         // TODO сделать, константы, поставить нормальные callbacks
-        rowsInline.add(Collections.singletonList(getButton(ADD_WATCHEDLIST_COMMAND_TEXT, ADD_WATCHEDLIST_COMMAND_TEXT)));
-        rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
+        rowsInline.add(Collections.singletonList(getButton(ADD_WATCHEDLIST_COMMAND_TEXT, "add watchedlist")));
+        rowsInline.add(Collections.singletonList(getButton(REMOVE_FILM_COMMAND_TEXT, "remove watchedlist")));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
@@ -284,7 +308,8 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         executeMessage(message);
 
-        userStates.put(chatId, BotState.IDLE);
+        // Получение объекта UserState из карты или создание нового, если его нет
+        UserState userState = userStates.computeIfAbsent(chatId, k -> new UserState(BotState.IDLE));
     }
 
     private InlineKeyboardMarkup createMainInlineButtons() {
@@ -386,8 +411,8 @@ public class KinoListBot extends TelegramLongPollingBot {
         if (executeMessage(message)) {
             log.info("Сообщение [{}] успешно отправлено {}", formattedText, chatId);
         }
-
-
+        // Получение объекта UserState из карты или создание нового, если его нет
+        UserState userState = userStates.computeIfAbsent(chatId, k -> new UserState(BotState.IDLE));
     }
 
     private void helpCommand(Long chatId) {
