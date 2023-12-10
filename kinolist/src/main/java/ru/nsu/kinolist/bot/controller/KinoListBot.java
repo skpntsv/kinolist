@@ -14,25 +14,28 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.nsu.kinolist.bot.util.BotState;
+import ru.nsu.kinolist.bot.util.UserState;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static ru.nsu.kinolist.bot.util.Constants.*;
 
 @Component
 @Slf4j
 public class KinoListBot extends TelegramLongPollingBot {
+    private Map<Long, BotState> userStates = new ConcurrentHashMap<>();
     private static final String WISHLIST = "Список желаемого";
     private static final String WATCHED_LIST = "Список просмотренного";
     private static final String TRACKED_LIST = "Список отслеживаемого";
@@ -53,25 +56,36 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update request) {
-        if (request.hasMessage() && request.getMessage().hasText()) {
-            log.info("Working onUpdateReceived, request text[{}] from @{} - {}",
-                    request.getMessage().getText(), request.getMessage().getChat().getUserName(), request.getMessage().getChatId());
-
-            String message = request.getMessage().getText();
-            Long chatId = request.getMessage().getChatId();
-            switch (message) {
-                case START_COMMAND -> {
-                    String userName = request.getMessage().getChat().getFirstName();
-                    startCommand(chatId, userName);
+        if (request.hasMessage()) {
+            if (request.hasCallbackQuery()) {
+                log.info("get callback {}", request.getCallbackQuery().getData());
+                onCallbackQueryReceived(request.getCallbackQuery());
+            } else {
+                Message message = request.getMessage();
+                if (message != null && message.hasText()) {
+                    log.info("Working onUpdateReceived, request text[{}] from @{} - {}",
+                            request.getMessage().getText(), request.getMessage().getChat().getUserName(), request.getMessage().getChatId());
+                    onInputMessage(message);
                 }
-                case HELP_COMMAND -> helpCommand(chatId);
-                case MAIN_MENU_COMMAND_TEXT, MENU_COMMAND -> showMainMenu(chatId);
-                case SHOW_PLAYLISTS_COMMAND -> showPlaylistsInlineButtons(chatId);
-                default -> unknownCommand(chatId);
             }
-        } else if (request.hasCallbackQuery()) {
-            log.info("get callback {}", request.getCallbackQuery().getData());
-            onCallbackQueryReceived(request.getCallbackQuery());
+        }
+    }
+
+    private void onInputMessage(Message message) {
+        log.info("Working onUpdateReceived, request text[{}] from @{} - {}",
+                message.getText(), message.getChat().getUserName(), message.getChatId());
+
+        Long chatId = message.getChatId();
+
+        switch (message.getText()) {
+            case START_COMMAND -> {
+                String userName = message.getChat().getFirstName();
+                startCommand(chatId, userName);
+            }
+            case HELP_COMMAND -> helpCommand(chatId);
+            case MAIN_MENU_COMMAND_TEXT, MENU_COMMAND -> showMainMenu(chatId);
+            case SHOW_PLAYLISTS_COMMAND -> showPlaylistsInlineButtons(chatId);
+            default -> unknownCommand(chatId);
         }
     }
 
@@ -86,10 +100,25 @@ public class KinoListBot extends TelegramLongPollingBot {
             case WATCHED_LIST -> showWatchedList(chatId, messageId);
             case TRACKED_LIST -> showTrackedList(chatId, messageId);
             case PLAYLISTS_COMMAND_TEXT -> showPlaylists(chatId, messageId);
+            case ADD_WATCHEDLIST_COMMAND_TEXT -> requestUserInput(chatId);
 
             default -> sendMessage(chatId, "пук-пук");
         }
     }
+
+    private void requestUserInput(Long chatId) {
+        String text = "Введите название фильма/сериала";
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+
+        userStates.replace(chatId, BotState.IDLE, BotState.AWAITING_INPUT);
+
+        if (executeMessage(message)) {
+            log.info("Сообщение [{}] успешно отправлено {}", text, chatId);
+        }
+    }
+
 
     private void showWatchedList(Long chatId, Integer messageId) {
         sendAction(chatId, ActionType.TYPING);
@@ -103,7 +132,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         // TODO сделать, константы, поставить нормальные callbacks
-        rowsInline.add(Collections.singletonList(getButton("Добавить фильм/сериал", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
+        rowsInline.add(Collections.singletonList(getButton(ADD_WATCHEDLIST_COMMAND_TEXT, ADD_WATCHEDLIST_COMMAND_TEXT)));
         rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
@@ -212,33 +241,6 @@ public class KinoListBot extends TelegramLongPollingBot {
                 """;
     }
 
-    private void showPlaylist(Long chatId, String playlistType) {
-        // TODO добавить логику для отображения содержимого плейлиста
-
-        String playlistContent = getPlaylistContent(playlistType);
-
-        SendMessage message = new SendMessage();
-        message.enableMarkdown(true);
-        message.setChatId(chatId);
-        message.setText(playlistContent);
-
-        // TODO У списка желаемого должно быть два инлайна(перенести в просмотренные и удалить), а у остальных только одно(удалить)
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        rowsInline.add(Collections.singletonList(getButton("Добавить в плейлист", "ADD_TO_PLAYLIST")));
-        rowsInline.add(Collections.singletonList(getButton("Удалить из плейлиста", "REMOVE_FROM_PLAYLIST")));
-
-        inlineKeyboardMarkup.setKeyboard(rowsInline);
-        message.setReplyMarkup(inlineKeyboardMarkup);
-
-        executeMessage(message);
-    }
-
-    private String getPlaylistContent(String playlistType) {
-        // TODO надо подключить контроллер
-        return "Тут должно быть содержимое вашего плейлиста, но я этого ещё не сделал....";
-    }
-
     private void showPlaylists(Long chatId, Integer messageId) {
         sendAction(chatId, ActionType.TYPING);
 
@@ -281,6 +283,8 @@ public class KinoListBot extends TelegramLongPollingBot {
         message.setReplyMarkup(createMainInlineButtons());
 
         executeMessage(message);
+
+        userStates.put(chatId, BotState.IDLE);
     }
 
     private InlineKeyboardMarkup createMainInlineButtons() {
@@ -382,6 +386,8 @@ public class KinoListBot extends TelegramLongPollingBot {
         if (executeMessage(message)) {
             log.info("Сообщение [{}] успешно отправлено {}", formattedText, chatId);
         }
+
+
     }
 
     private void helpCommand(Long chatId) {
