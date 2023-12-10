@@ -102,6 +102,8 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        // TODO сделать, константы, поставить нормальные callbacks
+        rowsInline.add(Collections.singletonList(getButton("Добавить фильм/сериал", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
         rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
@@ -131,6 +133,8 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        // TODO сделать, константы, поставить нормальные callbacks
+        rowsInline.add(Collections.singletonList(getButton("Добавить фильм/сериал", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
         rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
@@ -160,7 +164,9 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        rowsInline.add(Collections.singletonList(getButton("Перенести фильм/сериал в просмотренные", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
+        // TODO сделать, константы, поставить нормальные callbacks
+        rowsInline.add(Collections.singletonList(getButton("Добавить фильм/сериал", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
+        rowsInline.add(Collections.singletonList(getButton("Перенести фильм/сериал", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
         rowsInline.add(Collections.singletonList(getButton("Удалить фильм/сериал из плейлиста", "REMOVE_FROM_WISHLIST")));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
