@@ -17,7 +17,7 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:hibernate.properties")
 @EnableTransactionManagement
-public class SpringConfig{
+public class SpringConfig {
     private final Environment environment;
 
     public SpringConfig(Environment environment) {
@@ -41,6 +41,7 @@ public class SpringConfig{
         properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
         return properties;
     }
+
     @Bean
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();

@@ -24,11 +24,13 @@ public class FilmDAO {
         session.save(film);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void saveByIdToList(int userId, int filmId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
+
         Person person = session.get(Person.class, userId);
         Film film = session.get(Film.class, filmId);
+
         switch (listType) {
             case WISH -> {
                 person.getWishList().add(film);
@@ -45,11 +47,13 @@ public class FilmDAO {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void deleteByIdFromList(int userId, int filmId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
+
         Person person = session.get(Person.class, userId);
         Film film = session.get(Film.class, filmId);
+
         switch (listType) {
             case WISH -> {
                 person.getWishList().remove(film);

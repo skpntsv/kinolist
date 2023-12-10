@@ -1,8 +1,8 @@
 package ru.nsu.kinolist.database.entities;
 
-import javax.persistence.*;
 import lombok.Getter;
 
+import javax.persistence.*;
 import java.util.List;
 
 @Getter
@@ -13,8 +13,10 @@ public class Person {
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int userId;
+
     @Column(name = "chat_id")
     String chatId;
+
     @ManyToMany
     @JoinTable(
             name = "Person_Film_Wish",
@@ -22,6 +24,7 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
     List<Film> wishList;
+
     @ManyToMany
     @JoinTable(
             name = "Person_Film_Tracked",
@@ -29,6 +32,7 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
     List<Film> trackedList;
+
     @ManyToMany
     @JoinTable(
             name = "Person_Film_Viewed",

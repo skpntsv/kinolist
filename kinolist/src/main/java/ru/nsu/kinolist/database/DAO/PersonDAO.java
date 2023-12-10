@@ -22,8 +22,9 @@ public class PersonDAO {
     }
 
     @Transactional
-    public void savePerson(String chatId) {
+    public void save(String chatId) {
         Session session = sessionFactory.getCurrentSession();
+
         Person person = new Person(chatId);
         session.save(person);
     }
@@ -31,8 +32,10 @@ public class PersonDAO {
     @Transactional(readOnly = true)
     public List<Film> getAllByUserIdFromList(int userId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
+
         Person person = session.get(Person.class, userId);
         List<Film> filmList = null;
+
         switch (listType) {
             case WISH -> {
                 Hibernate.initialize(person.getWishList());
@@ -47,6 +50,7 @@ public class PersonDAO {
                 filmList = person.getViewedList();
             }
         }
+
         return filmList;
     }
 }
