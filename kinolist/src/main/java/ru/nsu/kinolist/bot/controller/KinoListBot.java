@@ -16,7 +16,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ public class KinoListBot extends TelegramLongPollingBot {
     private String botName;
     private static final String START = "/start";
     private static final String HELP = "/help";
+    private static final String SHOW_PLAYLISTS = "/show";
+    private static final String MENU = "/menu";
 
     public KinoListBot(@Value("${bot.token}") String botToken) {
         super(botToken);
@@ -63,7 +67,8 @@ public class KinoListBot extends TelegramLongPollingBot {
                     startCommand(chatId, userName);
                 }
                 case HELP -> helpCommand(chatId);
-                case "/show" -> showMyPlaylistsKeyboard(chatId);
+                case MAIN_MENU, MENU -> showMainMenu(chatId);
+                case SHOW_PLAYLISTS -> showMyPlaylistsInlineButtons(chatId);
                 default -> unknownCommand(chatId);
             }
         } else if (request.hasCallbackQuery()) {
@@ -81,6 +86,7 @@ public class KinoListBot extends TelegramLongPollingBot {
             case WISHLIST -> showPlaylist(chatId, "WISHLIST");
             case WATCHED_LIST -> showPlaylist(chatId, "WATCHED_LIST");
             case TRACKED_LIST -> showPlaylist(chatId, "TRACKED_LIST");
+            case MAIN_MENU -> showMainMenu(chatId);
             default -> sendMessage(chatId, "пук-пук");
         }
     }
@@ -112,13 +118,47 @@ public class KinoListBot extends TelegramLongPollingBot {
         return "Тут должно быть содержимое вашего плейлиста, но я этого ещё не сделал....";
     }
 
+    private void showMainMenu(Long chatId) {
+        SendMessage message = new SendMessage();
+        message.enableMarkdown(true);
+        message.setChatId(chatId);
+        message.setText("Главное меню:");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+        rowsInline.add(Collections.singletonList(getButton("Список желаемого", "WISHLIST")));
+        rowsInline.add(Collections.singletonList(getButton("Список просмотренного", "WATCHED_LIST")));
+        rowsInline.add(Collections.singletonList(getButton("Список отслеживаемого", "TRACKED_LIST")));
+
+        inlineKeyboardMarkup.setKeyboard(rowsInline);
+        message.setReplyMarkup(inlineKeyboardMarkup);
+
+        executeMessage(message);
+    }
+
+    private ReplyKeyboardMarkup createMainKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+        KeyboardRow row = new KeyboardRow();
+        row.add(MAIN_MENU);
+        keyboard.add(row);
+
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        return replyKeyboardMarkup;
+    }
 
 
     private void addBotCommands(){
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand("/start", START_COMMAND_TEXT));
-        listOfCommands.add(new BotCommand("/help", HELP_COMMAND_TEXT));
-        listOfCommands.add(new BotCommand("/show", SHOW_PLAYLISTS_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand(START, START_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand(MENU, MAIN_MENU));
+        listOfCommands.add(new BotCommand(HELP, HELP_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS, SHOW_PLAYLISTS_COMMAND_TEXT));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -128,7 +168,7 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     private void sendAction(Long chatId, ActionType actionType) {
         SendChatAction sendChatAction = new SendChatAction();
-        sendChatAction.setChatId(chatId.toString());
+        sendChatAction.setChatId(chatId);
         sendChatAction.setAction(actionType);
 
         try {
@@ -138,7 +178,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         }
     }
 
-    private void showMyPlaylistsKeyboard(Long chatId) {
+    private void showMyPlaylistsInlineButtons(Long chatId) {
         sendAction(chatId, ActionType.TYPING);
 
         SendMessage message = new SendMessage();
@@ -172,7 +212,16 @@ public class KinoListBot extends TelegramLongPollingBot {
     private void startCommand(Long chatId, String userName) {
         String formattedText = String.format(START_MESSAGE, userName);
 
-        sendMessage(chatId, formattedText);
+        SendMessage message = new SendMessage();
+        message.enableMarkdown(true);
+
+        message.setChatId(chatId);
+        message.setText(formattedText);
+        message.setReplyMarkup(createMainKeyboard());
+
+        if (executeMessage(message)) {
+            log.info("Сообщение [{}] успешно отправлено {}", formattedText, chatId);
+        }
     }
 
     private void helpCommand(Long chatId) {
