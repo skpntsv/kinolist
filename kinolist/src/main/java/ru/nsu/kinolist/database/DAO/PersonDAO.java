@@ -30,10 +30,11 @@ public class PersonDAO {
     }
 
     @Transactional(readOnly = true)
-    public List<Film> getAllByUserIdFromList(int userId, ListType listType) {
+    public List<Film> getAllByUserIdFromList(String chatId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
 
-        Person person = session.get(Person.class, userId);
+        Person person = (Person) session.createQuery("from Person where chatId=:chatId")
+                .setParameter("chatId", chatId).getSingleResult();
         List<Film> filmList = null;
 
         switch (listType) {
