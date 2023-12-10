@@ -81,11 +81,11 @@ public class KinoListBot extends TelegramLongPollingBot {
         Long chatId = callbackQuery.getMessage().getChatId();
 
         switch (data) {
+            case MAIN_MENU_COMMAND_TEXT -> showMainMenu(chatId);
             case WISHLIST -> showWishList(chatId, messageId);
             case WATCHED_LIST -> showWatchedList(chatId, messageId);
             case TRACKED_LIST -> showTrackedList(chatId, messageId);
-            case MAIN_MENU_COMMAND_TEXT -> showMainMenu(chatId);
-            case PLAYLISTS_COMMAND_TEXT -> showPlaylists(chatId);
+            case PLAYLISTS_COMMAND_TEXT -> showPlaylists(chatId, messageId);
 
             default -> sendMessage(chatId, "пук-пук");
         }
@@ -233,25 +233,35 @@ public class KinoListBot extends TelegramLongPollingBot {
         return "Тут должно быть содержимое вашего плейлиста, но я этого ещё не сделал....";
     }
 
-    private void showPlaylists(Long chatId) {
+    private void showPlaylists(Long chatId, Integer messageId) {
         sendAction(chatId, ActionType.TYPING);
 
-        SendMessage message = new SendMessage();
-        message.enableMarkdown(true);
-        message.setChatId(chatId);
-        message.setText("#Мои плейлисты:");
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+
+        editedMessage.setText("Мои плейлисты: ");
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-
         rowsInline.add(Collections.singletonList(getButton("Список желаемого", WISHLIST)));
         rowsInline.add(Collections.singletonList(getButton("Список просмотренного", WATCHED_LIST)));
         rowsInline.add(Collections.singletonList(getButton("Список отслеживаемого", TRACKED_LIST)));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
-        message.setReplyMarkup(inlineKeyboardMarkup);
 
-        executeMessage(message);
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(editedMessage);
+            execute(editMessageReplyMarkup);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+        }
+        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
     }
 
     private void showMainMenu(Long chatId) {
