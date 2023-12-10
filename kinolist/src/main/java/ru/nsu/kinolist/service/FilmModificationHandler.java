@@ -3,6 +3,8 @@ package ru.nsu.kinolist.service;
 import org.springframework.stereotype.Component;
 import ru.nsu.kinolist.filmApi.response.FilmResponse;
 import ru.nsu.kinolist.filmApi.service.FilmApiService;
+import ru.nsu.kinolist.jobs.Film;
+import ru.nsu.kinolist.jobs.FilmDAO;
 
 import java.util.Optional;
 
@@ -11,8 +13,7 @@ public class FilmModificationHandler {
     private FilmApiService filmApiService;
     private FilmDAO filmDAO;
 
-    public Optional<Film> findFilm(String filmName, ControllerType from) {
-        //TODO switch by type
+    public Optional<Film> findFilm(String filmName) {
         Optional<Film> filmFromDB = filmDAO.getFilm(filmName);
         if (filmFromDB.isPresent()) {
             return filmFromDB;
@@ -21,14 +22,15 @@ public class FilmModificationHandler {
         if (optFilmResponse.isEmpty()) {
             return Optional.empty();
         }
-        //TODO FilmResponse cast to Film
-        Film film = toFilm(filmResponse);
+
+        Film film = toFilm(optFilmResponse.get());
         filmDAO.saveFilm(film);
-        return Optional.ofNullable(film);
+        return Optional.of(film);
     }
 
     private Film toFilm(FilmResponse filmResponse) {
-        return null;
+        return new Film(filmResponse.getNameRu(), filmResponse.getYear(), filmResponse.getPosterUrl(), filmResponse.getFilmId(),
+                !filmResponse.getType().equals("FILM"), filmResponse.getRating(), filmResponse.getDescription());
     }
 
 }

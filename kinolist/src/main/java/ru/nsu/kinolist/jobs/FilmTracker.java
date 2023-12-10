@@ -3,14 +3,14 @@ package ru.nsu.kinolist.jobs;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.nsu.kinolist.filmApi.response.FilmResponse;
+import ru.nsu.kinolist.filmApi.response.Episode;
+import ru.nsu.kinolist.filmApi.response.Season;
 import ru.nsu.kinolist.filmApi.response.SeasonsResponse;
 import ru.nsu.kinolist.filmApi.service.FilmApiService;
-import ru.nsu.kinolist.service.Film;
 
-import java.util.HashMap;
+
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -26,24 +26,32 @@ public class FilmTracker {
     void checkInfoForTrackedFilms() {
         List<Film> filmList = filmDAO.getAllFilmsFromTracking();
         for (Film film: filmList) {
-            Optional<String> message = getInfoByTrackedFilm(film);
-            if (message.isEmpty()) {
+            Optional<Episode> episode = getInfoByTrackedFilm(film);
+            if (episode.isEmpty()) {
                 continue;
             }
-            sendToPeople(film, message.get());
+            sendToPeople(film, episode.get());
         }
     }
 
-    private void sendToPeople(Film film, String message) {
+    private void sendToPeople(Film film, Episode episode) {
         List<Person> people = filmDAO.getPeopleByTrackedFilm(film);
         for (Person person: people) {
-            trackedListController.sendMessage(person.getChatId(), message);
+           //TODO
+            // trackedListController.sendMessage(person.getChatId(), episode);
         }
     }
 
-    private Optional<String> getInfoByTrackedFilm(Film film) {
-        SeasonsResponse filmResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId()).get();
-        //TODO parsing and receive info about new series
+    private Optional<Episode> getInfoByTrackedFilm(Film film) {
+        SeasonsResponse seasonsResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId()).get();
+        for (Season season: seasonsResponse.getItems()) {
+            for (Episode episode: season.getEpisodes()) {
+                if (episode.getReleaseDate().isEqual(LocalDate.now()) ) {
+                    episode.setFilmName(film.getFilmName());
+                    return Optional.of(episode);
+                }
+            }
+        }
         return Optional.empty();
     }
 }
