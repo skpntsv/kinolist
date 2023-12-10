@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -37,10 +39,6 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     @Value("${bot.name}")
     private String botName;
-    private static final String START = "/start";
-    private static final String HELP = "/help";
-    private static final String SHOW_PLAYLISTS = "/show";
-    private static final String MENU = "/menu";
 
     public KinoListBot(@Value("${bot.token}") String botToken) {
         super(botToken);
@@ -56,19 +54,19 @@ public class KinoListBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update request) {
         if (request.hasMessage() && request.getMessage().hasText()) {
-            log.info("Working onUpdateReceived, request text[{}] from @{}",
-                    request.getMessage().getText(), request.getMessage().getChat().getUserName());
+            log.info("Working onUpdateReceived, request text[{}] from @{} - {}",
+                    request.getMessage().getText(), request.getMessage().getChat().getUserName(), request.getMessage().getChatId());
 
             String message = request.getMessage().getText();
             Long chatId = request.getMessage().getChatId();
             switch (message) {
-                case START -> {
+                case START_COMMAND -> {
                     String userName = request.getMessage().getChat().getFirstName();
                     startCommand(chatId, userName);
                 }
-                case HELP -> helpCommand(chatId);
-                case MAIN_MENU, MENU -> showMainMenu(chatId);
-                case SHOW_PLAYLISTS -> showMyPlaylistsInlineButtons(chatId);
+                case HELP_COMMAND -> helpCommand(chatId);
+                case MAIN_MENU_COMMAND_TEXT, MENU_COMMAND -> showMainMenu(chatId);
+                case SHOW_PLAYLISTS_COMMAND -> showPlaylistsInlineButtons(chatId);
                 default -> unknownCommand(chatId);
             }
         } else if (request.hasCallbackQuery()) {
@@ -83,12 +81,129 @@ public class KinoListBot extends TelegramLongPollingBot {
         Long chatId = callbackQuery.getMessage().getChatId();
 
         switch (data) {
-            case WISHLIST -> showPlaylist(chatId, "WISHLIST");
-            case WATCHED_LIST -> showPlaylist(chatId, "WATCHED_LIST");
-            case TRACKED_LIST -> showPlaylist(chatId, "TRACKED_LIST");
-            case MAIN_MENU -> showMainMenu(chatId);
+            case WISHLIST -> showWishList(chatId, messageId);
+            case WATCHED_LIST -> showWatchedList(chatId, messageId);
+            case TRACKED_LIST -> showTrackedList(chatId, messageId);
+            case MAIN_MENU_COMMAND_TEXT -> showMainMenu(chatId);
+            case PLAYLISTS_COMMAND_TEXT -> showPlaylists(chatId);
+
             default -> sendMessage(chatId, "пук-пук");
         }
+    }
+
+    private void showWatchedList(Long chatId, Integer messageId) {
+        sendAction(chatId, ActionType.TYPING);
+
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+
+        editedMessage.setText(getWatchedList(chatId));
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
+
+        inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(editedMessage);
+            execute(editMessageReplyMarkup);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+        }
+        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
+    }
+
+    private void showTrackedList(Long chatId, Integer messageId) {
+        sendAction(chatId, ActionType.TYPING);
+
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+
+        editedMessage.setText(getTrackedList(chatId));
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        rowsInline.add(Collections.singletonList(getButton("Удалить фильм", "REMOVE_FROM_WATCHEDLIST")));
+
+        inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(editedMessage);
+            execute(editMessageReplyMarkup);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+        }
+        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
+    }
+
+    private void showWishList(Long chatId, Integer messageId) {
+        sendAction(chatId, ActionType.TYPING);
+
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+
+        editedMessage.setText(getWishList(chatId));
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+        rowsInline.add(Collections.singletonList(getButton("Перенести фильм/сериал в просмотренные", "TRANSFER_FROM_WISHLIST_TO_WATCHEDLIST")));
+        rowsInline.add(Collections.singletonList(getButton("Удалить фильм/сериал из плейлиста", "REMOVE_FROM_WISHLIST")));
+
+        inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(editedMessage);
+            execute(editMessageReplyMarkup);
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+        }
+        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
+    }
+
+    private String getWishList(Long ChatId) {
+        // TODO нужно брать из БД список фильмов
+
+        return """
+                1. Матрица 4
+                2. Побег из Шоушенко
+                3. Рик и Морти (2013-н.в.)
+                """;
+    }
+
+    private String getWatchedList(Long chatId) {
+        // TODO нужно брать из БД список фильмов
+
+        return """
+                1. Шматрица
+                2. Зеленый слоник
+                3. С приветом по планетам
+                """;
+    }
+    private String getTrackedList(Long chatId) {
+        // TODO нужно брать из БД список фильмов
+
+        return """
+                1. Слово пацана
+                """;
     }
 
     private void showPlaylist(Long chatId, String playlistType) {
@@ -118,18 +233,20 @@ public class KinoListBot extends TelegramLongPollingBot {
         return "Тут должно быть содержимое вашего плейлиста, но я этого ещё не сделал....";
     }
 
-    private void showMainMenu(Long chatId) {
+    private void showPlaylists(Long chatId) {
+        sendAction(chatId, ActionType.TYPING);
+
         SendMessage message = new SendMessage();
         message.enableMarkdown(true);
         message.setChatId(chatId);
-        message.setText("Главное меню:");
+        message.setText("#Мои плейлисты:");
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        rowsInline.add(Collections.singletonList(getButton("Список желаемого", "WISHLIST")));
-        rowsInline.add(Collections.singletonList(getButton("Список просмотренного", "WATCHED_LIST")));
-        rowsInline.add(Collections.singletonList(getButton("Список отслеживаемого", "TRACKED_LIST")));
+        rowsInline.add(Collections.singletonList(getButton("Список желаемого", WISHLIST)));
+        rowsInline.add(Collections.singletonList(getButton("Список просмотренного", WATCHED_LIST)));
+        rowsInline.add(Collections.singletonList(getButton("Список отслеживаемого", TRACKED_LIST)));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
         message.setReplyMarkup(inlineKeyboardMarkup);
@@ -137,12 +254,40 @@ public class KinoListBot extends TelegramLongPollingBot {
         executeMessage(message);
     }
 
+    private void showMainMenu(Long chatId) {
+        sendAction(chatId, ActionType.TYPING);
+
+        SendMessage message = new SendMessage();
+        message.enableMarkdown(true);
+        message.setChatId(chatId);
+        message.setText("Главное меню:");   // TODO Сделать оформления главного меню
+
+        message.setReplyMarkup(createMainInlineButtons());
+
+        executeMessage(message);
+    }
+
+    private InlineKeyboardMarkup createMainInlineButtons() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+        rowsInline.add(Collections.singletonList(getButton(PLAYLISTS_COMMAND_TEXT, PLAYLISTS_COMMAND_TEXT)));
+        rowsInline.add(Collections.singletonList(getButton(ADD_WATCHEDLIST_COMMAND_TEXT, ADD_WATCHEDLIST_COMMAND_TEXT)));
+        rowsInline.add(Collections.singletonList(getButton(ADD_WISHLIST_COMMAND_TEXT, ADD_WISHLIST_COMMAND_TEXT)));
+        rowsInline.add(Collections.singletonList(getButton(ADD_TRACKEDLIST_COMMAND_TEXT, ADD_TRACKEDLIST_COMMAND_TEXT)));
+        rowsInline.add(Collections.singletonList(getButton(SEARCH_RANDOM_COMMAND_TEXT, SEARCH_RANDOM_COMMAND_TEXT)));
+
+        inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+        return inlineKeyboardMarkup;
+    }
+
     private ReplyKeyboardMarkup createMainKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add(MAIN_MENU);
+        row.add(MAIN_MENU_COMMAND_TEXT);
         keyboard.add(row);
 
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -155,10 +300,10 @@ public class KinoListBot extends TelegramLongPollingBot {
 
     private void addBotCommands(){
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand(START, START_COMMAND_TEXT));
-        listOfCommands.add(new BotCommand(MENU, MAIN_MENU));
-        listOfCommands.add(new BotCommand(HELP, HELP_COMMAND_TEXT));
-        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS, SHOW_PLAYLISTS_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION));
+        listOfCommands.add(new BotCommand(MENU_COMMAND, MAIN_MENU_COMMAND_TEXT));
+        listOfCommands.add(new BotCommand(HELP_COMMAND, HELP_COMMAND_DESCRIPTION));
+        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS_COMMAND, SHOW_PLAYLISTS_COMMAND_DESCRIPTION));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -178,7 +323,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         }
     }
 
-    private void showMyPlaylistsInlineButtons(Long chatId) {
+    private void showPlaylistsInlineButtons(Long chatId) {
         sendAction(chatId, ActionType.TYPING);
 
         SendMessage message = new SendMessage();
@@ -188,7 +333,6 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-
 
         rowsInline.add(Collections.singletonList(getButton(WISHLIST, WISHLIST)));
         rowsInline.add(Collections.singletonList(getButton(WATCHED_LIST, WATCHED_LIST)));
@@ -243,7 +387,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error("Ошибка отправки сообщения " + e.getMessage());
         }
-        log.info("Фотография [{}] успешно отправлено {}", imageURL, chatId);
+        log.info("Изображение [{}] успешно отправлено {}", imageURL, chatId);
     }
 
     private void sendMessage(long chatId, String textToSend) {
