@@ -46,6 +46,10 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+<<<<<<< HEAD
+=======
+
+>>>>>>> df82cf0c79beba2860d8998c158a65d9635e8548
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -56,6 +60,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+<<<<<<< HEAD
 
+=======
+>>>>>>> df82cf0c79beba2860d8998c158a65d9635e8548
     </dependencies>
 </project>
