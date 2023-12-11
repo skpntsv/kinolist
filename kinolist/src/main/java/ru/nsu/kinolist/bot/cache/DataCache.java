@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.cahce;
+package ru.nsu.kinolist.bot.cache;
 
 import ru.nsu.kinolist.bot.Movie;
 import ru.nsu.kinolist.bot.util.BotState;
