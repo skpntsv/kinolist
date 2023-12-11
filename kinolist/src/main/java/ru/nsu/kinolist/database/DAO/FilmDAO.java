@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.database.DAO;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,14 @@ public class FilmDAO {
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("select distinct f from Film f join f.trackingPeople")
                 .getResultList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Person> getPeopleByTrackedFilm(Film film) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Hibernate.initialize(film.getTrackingPeople());
+        return film.getTrackingPeople();
     }
 
     @Transactional
