@@ -57,11 +57,14 @@ public class FilmDAO {
         return session.createQuery("from Film where filmName=:filmName")
                 .setParameter("filmName", filmName).getResultStream().findAny();
     }
+
     @Transactional(readOnly = true)
-    public List<Film> getAllFilmsFromTracking(){
+    public List<Film> getAllFilmsFromTracking() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("select Film from Person p left join p.trackedList").getResultList();
+        return session.createQuery("select distinct f from Film f join f.trackingPeople")
+                .getResultList();
     }
+
     @Transactional
     public void deleteByChatIdFromList(String chatId, int filmId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
