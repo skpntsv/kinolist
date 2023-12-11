@@ -6,18 +6,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import ru.nsu.kinolist.filmApi.response.FilmResponse;
-import ru.nsu.kinolist.filmApi.response.SearchResponse;
-import ru.nsu.kinolist.filmApi.response.SeasonsResponse;
+import ru.nsu.kinolist.filmApi.response.*;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 @Component
 public class FilmApiService {
     private final RestTemplate restTemplate = new RestTemplate();
-
-    private final String url = "https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword={word}";
 
     private final HttpHeaders headers;
 
@@ -29,6 +26,7 @@ public class FilmApiService {
     public Optional<FilmResponse> sendRequestByName(String filmName) {
         HttpEntity<String> request = new HttpEntity<>(headers);
 
+        String url = "https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword={word}";
         SearchResponse results = restTemplate.exchange(url, HttpMethod.GET, request, SearchResponse.class, filmName).getBody();
         if (Objects.requireNonNull(results).getSearchFilmsCountResult() == 0) {
             return Optional.empty();
@@ -42,4 +40,25 @@ public class FilmApiService {
         return restTemplate.exchange(url, HttpMethod.GET, request, SeasonsResponse.class, id).getBody();
     }
 
+    public FilmResponseByRandom sendRequestForRandomFilm(Categories categories) {
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url = "https://kinopoiskapiunofficial.tech/api/v2.2/films?order={o}&type={t}&ratingFrom={r1}&ratingTo={r2}&yearFrom={y1}&yearTo={y2}&page={p}";
+        String genres = "&genres=";
+        if (categories.getGenre() != 0) {
+            url = url + genres + categories.getGenre();
+        }
+
+        RandomFilmsResponse randomFilmsResponse = restTemplate.exchange(url, HttpMethod.GET, request, RandomFilmsResponse.class,
+                categories.getOrder(), categories.getType(), categories.getRatingFrom(), categories.getRatingTo(), categories.getYearFrom(), categories.getYearTo(), 1).getBody();
+        int pages = randomFilmsResponse.getTotalPages();
+        int filmsOnPage = randomFilmsResponse.getTotal() / randomFilmsResponse.getTotalPages();
+        Random random = new Random();
+        int page = random.nextInt(pages) + 1;
+        int filmIdx =random.nextInt(filmsOnPage);
+
+        randomFilmsResponse = restTemplate.exchange(url, HttpMethod.GET, request, RandomFilmsResponse.class,
+                categories.getOrder(), categories.getType(), categories.getRatingFrom(), categories.getRatingTo(), categories.getYearFrom(), categories.getYearTo(), page).getBody();
+        FilmResponseByRandom filmResponseByRandom = randomFilmsResponse.getItems().get(filmIdx);
+        return filmResponseByRandom;
+    }
 }
