@@ -1,19 +1,16 @@
 package ru.nsu.kinolist.bot.cache;
 
 import org.springframework.stereotype.Service;
-import ru.nsu.kinolist.bot.Movie;
+import ru.nsu.kinolist.bot.Film;
 import ru.nsu.kinolist.bot.util.BotState;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserDataCache implements DataCache {
     private final Map<Long, BotState> usersBotStates = new ConcurrentHashMap<>();
-    private final Map<Long, List<Movie>> searchFoundedTrains = new ConcurrentHashMap<>();
+    private final Map<Long, Film> foundedFilm = new ConcurrentHashMap<>();
 
     @Override
     public void setUsersCurrentBotState(Long chatId, BotState botState) {
@@ -31,15 +28,15 @@ public class UserDataCache implements DataCache {
     }
 
     @Override
-    public void saveSearchFoundedMovies(Long chatId, List<Movie> foundTrains) {
-        searchFoundedTrains.put(chatId, foundTrains);
+    public void saveSearchFoundedMovies(Long chatId, Film film) {
+        foundedFilm.put(chatId, film);
     }
 
     @Override
-    public List<Movie> getSearchFoundedMovies(Long chatId) {
-        List<Movie> foundedTrains = searchFoundedTrains.get(chatId);
+    public Optional<Film> getSearchFoundedMovies(Long chatId) {
+        Film film = foundedFilm.get(chatId);
 
-        return Objects.isNull(foundedTrains) ? Collections.emptyList() : foundedTrains;
+        return Optional.ofNullable(film);
     }
 
 }

@@ -1,9 +1,10 @@
 package ru.nsu.kinolist.bot.cache;
 
-import ru.nsu.kinolist.bot.Movie;
+import ru.nsu.kinolist.bot.Film;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * interface for saving statement for each user
@@ -11,6 +12,6 @@ import java.util.List;
 public interface DataCache {
     void setUsersCurrentBotState(Long chatId, BotState botState);
     BotState getUsersCurrentBotState(Long chatId);
-    void saveSearchFoundedMovies(Long chatId, List<Movie> foundTrains);
-    List<Movie> getSearchFoundedMovies(Long chatId);
+    void saveSearchFoundedMovies(Long chatId, Film film);
+    Optional<Film> getSearchFoundedMovies(Long chatId);
 }
