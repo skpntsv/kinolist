@@ -6,7 +6,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.kinolist.ListType;
+import ru.nsu.kinolist.utils.ListType;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
 
