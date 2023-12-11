@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -11,11 +13,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:hibernate.properties")
+@PropertySource("classpath:business.properties")
 @EnableTransactionManagement
 public class SpringConfig {
     private final Environment environment;
@@ -57,4 +61,13 @@ public class SpringConfig {
         transactionManager.setSessionFactory(sessionFactory().getObject());
         return transactionManager;
     }
+
+    @Bean
+    public HttpHeaders httpHeadersBean() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set("X-API-KEY", environment.getProperty("apiKey"));
+        return headers;
+    }
+
 }

@@ -1,8 +1,12 @@
 package ru.nsu.kinolist.jobs;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.nsu.kinolist.database.DAO.FilmDAO;
+import ru.nsu.kinolist.database.entities.Film;
+import ru.nsu.kinolist.database.entities.Person;
 import ru.nsu.kinolist.filmApi.response.Episode;
 import ru.nsu.kinolist.filmApi.response.Season;
 import ru.nsu.kinolist.filmApi.response.SeasonsResponse;
@@ -16,9 +20,16 @@ import java.util.Optional;
 @Component
 @EnableScheduling
 public class FilmTracker {
-    private FilmApiService filmApiService;
-    private FilmDAO filmDAO;
-    private TrackedListController trackedListController;
+    private final FilmApiService filmApiService;
+    private final FilmDAO filmDAO;
+    private final TrackedListController trackedListController;
+
+    @Autowired
+    public FilmTracker(FilmApiService filmApiService, FilmDAO filmDAO, TrackedListController trackedListController) {
+        this.filmApiService = filmApiService;
+        this.filmDAO = filmDAO;
+        this.trackedListController = trackedListController;
+    }
 
     //TODO last message
 
@@ -43,7 +54,7 @@ public class FilmTracker {
     }
 
     private Optional<Episode> getInfoByTrackedFilm(Film film) {
-        SeasonsResponse seasonsResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId()).get();
+        SeasonsResponse seasonsResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId());
         for (Season season: seasonsResponse.getItems()) {
             for (Episode episode: season.getEpisodes()) {
                 if (episode.getReleaseDate().isEqual(LocalDate.now()) ) {

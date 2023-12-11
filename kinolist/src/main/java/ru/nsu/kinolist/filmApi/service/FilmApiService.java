@@ -1,19 +1,15 @@
 package ru.nsu.kinolist.filmApi.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.nsu.kinolist.filmApi.response.FilmResponse;
 import ru.nsu.kinolist.filmApi.response.SearchResponse;
-import ru.nsu.kinolist.filmApi.response.Season;
 import ru.nsu.kinolist.filmApi.response.SeasonsResponse;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,16 +17,13 @@ import java.util.Optional;
 public class FilmApiService {
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final String apiKey = "43e4ac25-ce79-4347-beec-ba74c9d2165e";
-
     private final String url = "https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword={word}";
 
-    private HttpHeaders headers;
+    private final HttpHeaders headers;
 
-    public FilmApiService() {
-        headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.set("X-API-KEY", apiKey);
+    @Autowired
+    public FilmApiService(HttpHeaders headers) {
+        this.headers = headers;
     }
 
     public Optional<FilmResponse> sendRequestByName(String filmName) {
