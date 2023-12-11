@@ -12,10 +12,10 @@ public class Person {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int userId;
+    private int userId;
 
     @Column(name = "chat_id")
-    String chatId;
+    private String chatId;
 
     @ManyToMany
     @JoinTable(
@@ -23,7 +23,7 @@ public class Person {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
-    List<Film> wishList;
+    private List<Film> wishList;
 
     @ManyToMany
     @JoinTable(
@@ -31,7 +31,7 @@ public class Person {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
-    List<Film> trackedList;
+    private List<Film> trackedList;
 
     @ManyToMany
     @JoinTable(
@@ -39,7 +39,7 @@ public class Person {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
-    List<Film> viewedList;
+    private List<Film> viewedList;
 
     public Person() {
     }

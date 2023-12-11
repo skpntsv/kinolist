@@ -12,37 +12,37 @@ public class Film {
     @Id
     @Column(name = "film_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int filmId;
+    private int filmId;
 
     @Column(name = "name")
-    String filmName;
+    private String filmName;
 
     @Column(name = "year")
-    Integer releaseYear;
+    private Integer releaseYear;
 
     @Column(name = "url")
-    String url;
+    private String url;
 
     @Column(name = "kinopoisk_id")
-    Integer kinopoiskId;
+    private Integer kinopoiskId;
 
     @Column(name = "is_series")
-    Boolean isSeries;
+    private Boolean isSeries;
 
     @Column(name = "rating")
-    Double rating;
+    private Double rating;
 
     @Column(name = "annotation")
-    String annotation;
+    private String annotation;
 
     @ManyToMany(mappedBy = "wishList")
-    List<Person> wishingPeople;
+    private List<Person> wishingPeople;
 
     @ManyToMany(mappedBy = "trackedList")
-    List<Person> trackingPeople;
+    private List<Person> trackingPeople;
 
     @ManyToMany(mappedBy = "viewedList")
-    List<Person> peopleWhoViewed;
+    private List<Person> peopleWhoViewed;
 
     public Film() {
     }

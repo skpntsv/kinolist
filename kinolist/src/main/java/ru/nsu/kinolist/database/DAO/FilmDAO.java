@@ -9,6 +9,9 @@ import ru.nsu.kinolist.ListType;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
 
+import java.util.List;
+import java.util.Optional;
+
 @Component
 public class FilmDAO {
     private final SessionFactory sessionFactory;
@@ -25,7 +28,7 @@ public class FilmDAO {
     }
 
     @Transactional
-    public void saveByIdToList(String chatId, int filmId, ListType listType) {
+    public void saveByChatIdToList(String chatId, int filmId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
 
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
@@ -48,8 +51,19 @@ public class FilmDAO {
         }
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Film> getByName(String filmName) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("from Film where filmName=:filmName")
+                .setParameter("filmName", filmName).getResultStream().findAny();
+    }
+    @Transactional(readOnly = true)
+    public List<Film> getAllFilmsFromTracking(){
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("select Film from Person p left join p.trackedList").getResultList();
+    }
     @Transactional
-    public void deleteByIdFromList(String chatId, int filmId, ListType listType) {
+    public void deleteByChatIdFromList(String chatId, int filmId, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
 
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
