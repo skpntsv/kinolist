@@ -1,9 +1,12 @@
 package ru.nsu.kinolist.jobs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
 import ru.nsu.kinolist.database.DAO.FilmDAO;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
@@ -13,6 +16,7 @@ import ru.nsu.kinolist.filmApi.response.SeasonsResponse;
 import ru.nsu.kinolist.filmApi.service.FilmApiService;
 
 
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +24,23 @@ import java.util.Optional;
 @Component
 @EnableScheduling
 public class FilmTracker {
-    private final FilmApiService filmApiService;
-    private final FilmDAO filmDAO;
-    private final TrackedListController trackedListController;
+    private  FilmApiService filmApiService;
+
+    private  FilmDAO filmDAO;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+   // @Value("${bot.token}")
+    private final String INFO_BOT_TOKEN;
+
+    private final String NOTIFICATION;
 
     @Autowired
-    public FilmTracker(FilmApiService filmApiService, FilmDAO filmDAO, TrackedListController trackedListController) {
+    public FilmTracker(FilmApiService filmApiService, FilmDAO filmDAO, @Value("${bot.token}")String tokken, @Value("${bot.notification}")String notification) {
         this.filmApiService = filmApiService;
         this.filmDAO = filmDAO;
-        this.trackedListController = trackedListController;
+        this.INFO_BOT_TOKEN = tokken;
+        NOTIFICATION = notification;
     }
 
     //TODO last message
@@ -48,8 +60,7 @@ public class FilmTracker {
     private void sendToPeople(Film film, Episode episode) {
         List<Person> people = filmDAO.getPeopleByTrackedFilm(film);
         for (Person person: people) {
-           //TODO
-            // trackedListController.sendMessage(person.getChatId(), episode);
+            sendMessageToBot(person.getChatId(), episode);
         }
     }
 
@@ -65,4 +76,14 @@ public class FilmTracker {
         }
         return Optional.empty();
     }
+    public void sendMessageToBot(String chatId, Episode episode) {
+        String message = NOTIFICATION + "\n"
+                +"Сериал: \"" + episode.getFilmName() + "\"\n"
+                + "\"" + episode.getNameRu() + "\", " + episode.getEpisodeNumber() + " серия " + episode.getSeasonNumber() + " сезона.";
+      //  System.out.println(INFO_BOT_TOKEN + " TOKKEN");
+        String url = "https://api.telegram.org/bot"+ INFO_BOT_TOKEN + "/sendMessage?chat_id="+ chatId + "&text=" + message;
+        restTemplate.getForObject(url, String.class);
+
+    }
+
 }

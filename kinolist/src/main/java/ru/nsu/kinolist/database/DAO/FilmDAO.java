@@ -29,12 +29,12 @@ public class FilmDAO {
     }
 
     @Transactional
-    public void saveByChatIdToList(String chatId, int filmId, ListType listType) {
+    public void saveByChatIdToList(String chatId, Film film, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
 
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
                 .setParameter("chatId", chatId).getSingleResult();
-        Film film = session.get(Film.class, filmId);
+       // Film film = session.get(Film.class, filmId);
 
         switch (listType) {
             case WISH -> {
@@ -75,12 +75,12 @@ public class FilmDAO {
     }
 
     @Transactional
-    public void deleteByChatIdFromList(String chatId, int filmId, ListType listType) {
+    public void deleteByChatIdFromList(String chatId, Film film, ListType listType) {
         Session session = sessionFactory.getCurrentSession();
 
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
                 .setParameter("chatId", chatId).getSingleResult();
-        Film film = session.get(Film.class, filmId);
+      //  Film film = session.get(Film.class, filmId);
 
         switch (listType) {
             case WISH -> {
