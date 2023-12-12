@@ -13,9 +13,7 @@ import java.util.Random;
 
 @Component
 public class WishListController extends ListController {
-
     private final PersonDAO personDAO;
-
 
     @Autowired
     public WishListController(FilmDAO filmDAO, FilmModificationHandler filmModificationHandler, PersonDAO personDAO) {
@@ -28,6 +26,11 @@ public class WishListController extends ListController {
         List<Film> films = personDAO.getAllFilmsByChatIdFromList(chatId, ListType.WISH);
         Random random = new Random();
         return films.get(random.nextInt(films.size()));
+    }
+
+    public void moveToViewedListByUser(String chatId, Film film) {
+        filmDAO.deleteByChatIdFromList(chatId, film, ListType.WISH);
+        filmDAO.saveByChatIdToList(chatId, film, ListType.VIEWED);
     }
 
 }

@@ -1,6 +1,7 @@
 package ru.nsu.kinolist.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
 import ru.nsu.kinolist.database.entities.Film;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ListController {
-    private final FilmModificationHandler filmModificationHandler;
+public class ListController { //@Qualifier("listController") для однозначности
+    protected final FilmModificationHandler filmModificationHandler;
 
-    private final FilmDAO filmDAO;
+    protected final FilmDAO filmDAO;
 
     @Autowired
     public ListController(FilmModificationHandler filmModificationHandler, FilmDAO filmDAO) {

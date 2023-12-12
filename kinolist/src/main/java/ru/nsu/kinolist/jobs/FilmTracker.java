@@ -18,19 +18,19 @@ import ru.nsu.kinolist.filmApi.service.FilmApiService;
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 @EnableScheduling
 public class FilmTracker {
-    private  FilmApiService filmApiService;
+    private final FilmApiService filmApiService;
 
-    private  FilmDAO filmDAO;
+    private final FilmDAO filmDAO;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-   // @Value("${bot.token}")
     private final String INFO_BOT_TOKEN;
 
     private final String NOTIFICATION;
@@ -43,16 +43,20 @@ public class FilmTracker {
         NOTIFICATION = notification;
     }
 
-    //TODO last message
+    private final ArrayList<Film> checkedFilmsToday = new ArrayList<>();
 
     @Scheduled(cron = "0 0 * * * *")
-    void checkInfoForTrackedFilms() {
+    private void checkInfoForTrackedFilms() {
         List<Film> filmList = filmDAO.getAllFilmsFromTracking();
         for (Film film: filmList) {
+            if (checkedFilmsToday.contains(film)) {
+                continue;
+            }
             Optional<Episode> episode = getInfoByTrackedFilm(film);
             if (episode.isEmpty()) {
                 continue;
             }
+            checkedFilmsToday.add(film);
             sendToPeople(film, episode.get());
         }
     }
@@ -83,7 +87,11 @@ public class FilmTracker {
       //  System.out.println(INFO_BOT_TOKEN + " TOKKEN");
         String url = "https://api.telegram.org/bot"+ INFO_BOT_TOKEN + "/sendMessage?chat_id="+ chatId + "&text=" + message;
         restTemplate.getForObject(url, String.class);
+    }
 
+    @Scheduled(cron = "0 0 0 * * *")
+    private void clearCheckedFilms() {
+        checkedFilmsToday.clear();
     }
 
 }
