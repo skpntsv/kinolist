@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 public class MainMenuHandler implements InputMessageHandler {
-    private MainMenuService mainMenuService;
+    private final MainMenuService mainMenuService;
 
     public MainMenuHandler(MainMenuService mainMenuService) {
         this.mainMenuService = mainMenuService;
