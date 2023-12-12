@@ -5,11 +5,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 @Service
 public class ParseQueryData {
-    public String parseOperation(CallbackQuery callbackQuery) {
-
+    public static String parseOperation(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[1];
     }
-    public String parseYesOrNo(CallbackQuery callbackQuery) {
+    public static String parseYesOrNo(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[2];
     }
 }
