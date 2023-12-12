@@ -27,11 +27,11 @@ public class ListController { //@Qualifier("listController") для однозн
         return filmModificationHandler.findFilm(filmName);
     }
 
-    void addByUser(String chatId, Film film, ListType listType) {
+    public void addByUser(String chatId, Film film, ListType listType) {
         filmDAO.saveByChatIdToList(chatId, film, listType);
     }
 
-    void removeByUser(String chatId, Film film, ListType listType) {
+    public void removeByUser(String chatId, Film film, ListType listType) {
         filmDAO.deleteByChatIdFromList(chatId, film, listType);
     }
 }

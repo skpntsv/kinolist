@@ -80,7 +80,7 @@ public class FilmTracker {
         }
         return Optional.empty();
     }
-    public void sendMessageToBot(String chatId, Episode episode) {
+    private void sendMessageToBot(String chatId, Episode episode) {
         String message = NOTIFICATION + "\n"
                 +"Сериал: \"" + episode.getFilmName() + "\"\n"
                 + "\"" + episode.getNameRu() + "\", " + episode.getEpisodeNumber() + " серия " + episode.getSeasonNumber() + " сезона.";
