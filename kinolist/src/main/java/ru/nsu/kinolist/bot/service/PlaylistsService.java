@@ -27,9 +27,9 @@ public class PlaylistsService {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        rowsInline.add(Collections.singletonList(getButton("Список желаемого", CallbackQueryType.WISHLIST.name())));
-        rowsInline.add(Collections.singletonList(getButton("Список просмотренного", CallbackQueryType.WATCHEDLIST.name())));
-        rowsInline.add(Collections.singletonList(getButton("Список отслеживаемого", CallbackQueryType.TRACKEDLIST.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Список желаемого", CallbackQueryType.WISHLIST.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Список просмотренного", CallbackQueryType.WATCHEDLIST.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Список отслеживаемого", CallbackQueryType.TRACKEDLIST.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
@@ -49,14 +49,5 @@ public class PlaylistsService {
         messages.add(editedMessage);
         messages.add(editMessageReplyMarkup);
         return messages;
-    }
-
-    private InlineKeyboardButton getButton(String nameButton, String callBackData){
-        var button = new InlineKeyboardButton();
-
-        button.setText(nameButton);
-        button.setCallbackData(callBackData);
-
-        return button;
     }
 }
