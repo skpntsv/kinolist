@@ -88,7 +88,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         if (userState != null) {
             switch (userState.getBotState()) {
                 case IDLE -> unknownCommand(chatId);
-                case AWAITING_INPUT -> handleAwaitingInput(chatId, userState, userInput);
+                case WISHLIST_ADD -> handleAwaitingInput(chatId, userState, userInput);
 
                 default -> unknownCommand(chatId);
             }
@@ -135,7 +135,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         message.setChatId(chatId);
         message.setText(text);
 
-        userState.setBotState(BotState.AWAITING_INPUT);
+        userState.setBotState(BotState.WISHLIST_ADD);
 
         if (executeMessage(message)) {
             log.info("Сообщение [{}] успешно отправлено {}", text, chatId);

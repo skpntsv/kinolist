@@ -3,6 +3,7 @@ package ru.nsu.kinolist.bot.service;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -51,8 +52,11 @@ public class WishlistService {
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> sendACKMessage(Long chatId, Integer messageId) {
+        List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
 
-        return null;
+        messages.add(new SendMessage(chatId.toString(), "Напишите название фильма/сериала"));
+
+        return messages;
     }
 
     private String getWishList(Long ChatId) {
