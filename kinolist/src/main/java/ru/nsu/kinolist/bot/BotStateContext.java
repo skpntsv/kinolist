@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Component
 public class BotStateContext {
-    private Map<BotState, InputMessageHandler> messageHandlers = new HashMap<>();
+    private final Map<BotState, InputMessageHandler> messageHandlers = new HashMap<>();
 
     public BotStateContext(List<InputMessageHandler> messageHandlers) {
         messageHandlers.forEach(handler -> this.messageHandlers.put(handler.getHandlerName(), handler));
@@ -26,39 +26,35 @@ public class BotStateContext {
     }
 
     private InputMessageHandler findMessageHandler(BotState currentState) {
-//        if (isTrainSearchState(currentState)) {
-//            return messageHandlers.get(BotState.TRAINS_SEARCH);
-//        }
-//
-//        if (isStationSearchState(currentState)) {
-//            return messageHandlers.get(BotState.STATIONS_SEARCH);
-//        }
-        if (currentState == BotState.SHOW_MAIN_MENU) {
-
+        if (isTrackedListState(currentState)) {
+            return messageHandlers.get(BotState.TRACKEDLIST);
+        }
+        if (isWatchedState(currentState)) {
+            return messageHandlers.get(BotState.WATCHEDLIST);
+        }
+        if (isWishlistState(currentState)) {
+            return messageHandlers.get(BotState.WISHLIST);
         }
 
         return messageHandlers.get(currentState);
     }
 
-    private boolean isTrainSearchState(BotState currentState) {
-//        return switch (currentState) {
-//            case TRAINS_SEARCH, ASK_DATE_DEPART, DATE_DEPART_RECEIVED, ASK_STATION_ARRIVAL, ASK_STATION_DEPART, TRAINS_SEARCH_STARTED, TRAIN_INFO_RESPONCE_AWAITING, TRAINS_SEARCH_FINISH ->
-//                    true;
-//            default -> false;
-//        };
-        return false;
+    private boolean isWishlistState(BotState currentState) {
+        return switch (currentState) {
+            case WISHLIST_ADD, WISHLIST_REMOVE, WISHLIST_TRANSFER -> true;
+            default -> false;
+        };
     }
-
-    private boolean isStationSearchState(BotState currentState) {
-//        switch (currentState) {
-//            case SHOW_STATIONS_BOOK_MENU:
-//            case ASK_STATION_NAMEPART:
-//            case STATION_NAMEPART_RECEIVED:
-//            case STATIONS_SEARCH:
-//                return true;
-//            default:
-//                return false;
-//        }
-        return false;
+    private boolean isTrackedListState(BotState currentState) {
+        return switch (currentState) {
+            case TRACKED_REMOVE, TRACKEDLIST_ADD -> true;
+            default -> false;
+        };
+    }
+    private boolean isWatchedState(BotState currentState) {
+        return switch (currentState) {
+            case WATCHEDLIST_ADD, WATCHEDLIST_REMOVE -> true;
+            default -> false;
+        };
     }
 }
