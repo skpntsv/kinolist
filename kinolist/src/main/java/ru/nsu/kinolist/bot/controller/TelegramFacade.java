@@ -3,17 +3,15 @@ package ru.nsu.kinolist.bot.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.nsu.kinolist.bot.BotStateContext;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryFacade;
+import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.nsu.kinolist.bot.util.Constants.*;
@@ -35,7 +33,7 @@ public class TelegramFacade {
         List<PartialBotApiMethod<? extends Serializable>> replies = null;
 
         if (update.hasCallbackQuery()) {
-            log.info("New callbackQuery from User: {}, chatId {}, with data: {}",
+            log.info("New callbackQuery from User[@{}], chatId[{}], with data[{}]",
                     update.getCallbackQuery().getFrom().getUserName(),
                     update.getCallbackQuery().getMessage().getChatId(),
                     update.getCallbackQuery().getData());
@@ -45,7 +43,7 @@ public class TelegramFacade {
 
         Message message = update.getMessage();
         if (message != null && message.hasText()) {
-            log.info("New message from chatIed: {}, chatId: {},  with text: {}",
+            log.info("New message from User[@{}], chatId[{}], with text[{}]",
                     message.getFrom().getUserName(),
                     message.getChatId(),
                     message.getText());
@@ -56,11 +54,11 @@ public class TelegramFacade {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> handleInputMessage(Message message) {
-        String inputMsg = message.getText();
+        String data = message.getText();
         Long chatId = message.getChatId();
         BotState botState;
 
-        botState = switch (inputMsg) {
+        botState = switch (data) {
             case "/start" -> BotState.SHOW_MAIN_MENU;
             case "/help" -> BotState.SHOW_HELP;
             case MENU_COMMAND, MAIN_MENU_COMMAND_TEXT -> BotState.SHOW_MAIN_MENU;
@@ -69,24 +67,11 @@ public class TelegramFacade {
         };
 
         userDataCache.setUsersCurrentBotState(chatId, botState);
-
+        if (botState == BotState.IDLE) {
+            log.info("chatId[{}] write message[{}] from state[{}]", chatId, data, botState);
+            return List.of(MessagesService.createMessageTemplate(chatId,
+                    "Неизвестная команда, пожалуйста, откройте Главное меню или напишите /help"));
+        }
         return botStateContext.processInputMessage(botState, message);
     }
-
-//    private void onCallbackQueryReceived(CallbackQuery callbackQuery) {
-//        String data = callbackQuery.getData();
-//        Integer messageId = callbackQuery.getMessage().getMessageId();
-//        Long chatId = callbackQuery.getMessage().getChatId();
-//
-//        switch (data) {
-//            case MAIN_MENU_COMMAND_TEXT -> showMainMenu(chatId);
-//            case WISHLIST -> showWishList(chatId, messageId);
-//            case WATCHED_LIST -> showWatchedList(chatId, messageId);
-//            case TRACKED_LIST -> showTrackedList(chatId, messageId);
-//            case PLAYLISTS_COMMAND_TEXT -> showPlaylists(chatId, messageId);
-//            case ADD_WATCHEDLIST_COMMAND_TEXT -> requestUserInput(chatId);
-//
-//            default -> sendMessage(chatId, "пук-пук");
-//        }
-//    }
 }
