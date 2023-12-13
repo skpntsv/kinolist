@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.bot.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 public class PlaylistsService {
     public List<PartialBotApiMethod<? extends Serializable>> getPlaylistMessage(Long chatId, Integer messageId) {
@@ -21,9 +23,6 @@ public class PlaylistsService {
         editedMessage.setMessageId(messageId);
 
         editedMessage.setText("Мои плейлисты: ");
-
-        String WatchedListCallbackData = String.format("%s|%s|%s", CallbackQueryType.WISHLIST.name(),
-                "*", "*");
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
@@ -39,13 +38,8 @@ public class PlaylistsService {
         editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
 
         List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
-//        try {
-//            execute(editedMessage);
-//            execute(editMessageReplyMarkup);
-//        } catch (TelegramApiException e) {
-//            log.error("Ошибка отправки сообщения " + e.getMessage());
-//        }
-//        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
+
+        log.info("Cообщение [{}] успешно изменено у {}", messageId, chatId);
         messages.add(editedMessage);
         messages.add(editMessageReplyMarkup);
         return messages;
