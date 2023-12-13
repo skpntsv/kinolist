@@ -19,6 +19,7 @@ import ru.nsu.kinolist.database.entities.Film;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +68,7 @@ public class WishListHandler implements InputMessageHandler {
             Film film = movie.get();
 
             messages.addAll(sendMovie(chatId, film, CallbackQueryType.ADD));
+            userDataCache.setCurrentMovieListOfUser(chatId, Collections.singletonList(film));
         } else {
             messages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал не найден"));
         }
@@ -75,7 +77,16 @@ public class WishListHandler implements InputMessageHandler {
     private SendMessage processTransferOperation(String filmNumber, Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        Film film = userDataCache.getCurrentMovieListOfUser(chatId).get(Integer.parseInt(filmNumber) - 1);
+        List<Film> movies;
+        Film film;
+        try {
+            movies = userDataCache.getCurrentMovieListOfUser(chatId);
+            film = movies.get(Integer.parseInt(filmNumber) - 1);
+        } catch (NullPointerException e) {
+            return MessagesService.errorMessage(chatId);
+        } catch (NumberFormatException e) {
+            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры!");
+        }
 
         sendMessage.setText("Ты действительно хочешь переместить " + film.getFilmName() + " в свой список просмотренных?");
         sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(CallbackQueryType.WISHLIST, CallbackQueryType.TRANSFER, film.getFilmId()));
@@ -86,16 +97,25 @@ public class WishListHandler implements InputMessageHandler {
     private SendMessage processRemoveOperation(String filmNumber, Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        Film film = userDataCache.getCurrentMovieListOfUser(chatId).get(Integer.parseInt(filmNumber) - 1);
+        List<Film> movies;
+        Film film;
+        try {
+            movies = userDataCache.getCurrentMovieListOfUser(chatId);
+            film = movies.get(Integer.parseInt(filmNumber) - 1);
+        } catch (NullPointerException e) {
+            return MessagesService.errorMessage(chatId);
+        } catch (NumberFormatException e) {
+            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры!");
+        }
 
-        sendMessage.setText("Ты действительно хочешь переместить " + film.getFilmName() + " в свой список просмотренных?");
+        sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + "из своего списка желаемых?");
         sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(CallbackQueryType.WISHLIST, CallbackQueryType.REMOVE, film.getFilmId()));
 
         return sendMessage;
     }
 
     private SendMessage handleDefaultCase(BotState currentBotState, Long chatId) {
-        log.error("Что-то пошло не так при обратно текста пользователя в состоянии {}", currentBotState);
+        log.error("Что-то пошло не так при обработки текста пользователя в состоянии {}", currentBotState);
         return createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз");
     }
 
