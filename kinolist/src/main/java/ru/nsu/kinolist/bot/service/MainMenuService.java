@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.bot.handlers.callbackquery.ParseQueryData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,24 +36,24 @@ public class MainMenuService {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        rowsInline.add(Collections.singletonList(getButton(PLAYLISTS_COMMAND_TEXT, CallbackQueryType.SHOW_PLAYLIST.name())));
-        rowsInline.add(Collections.singletonList(getButton(ADD_WATCHEDLIST_COMMAND_TEXT, ADD_WATCHEDLIST_COMMAND_TEXT)));
-        rowsInline.add(Collections.singletonList(getButton(ADD_WISHLIST_COMMAND_TEXT, ADD_WISHLIST_COMMAND_TEXT)));
-        rowsInline.add(Collections.singletonList(getButton(ADD_TRACKEDLIST_COMMAND_TEXT, ADD_TRACKEDLIST_COMMAND_TEXT)));
-        rowsInline.add(Collections.singletonList(getButton(SEARCH_RANDOM_COMMAND_TEXT, SEARCH_RANDOM_COMMAND_TEXT)));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(PLAYLISTS_COMMAND_TEXT,
+                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name()))));
+
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WATCHEDLIST_COMMAND_TEXT,
+                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name(), CallbackQueryType.ADD.name()))));
+
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WISHLIST_COMMAND_TEXT,
+                ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(), CallbackQueryType.ADD.name()))));
+
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_TRACKEDLIST_COMMAND_TEXT,
+                ParseQueryData.createCallbackData(CallbackQueryType.TRACKEDLIST.name(), CallbackQueryType.ADD.name()))));
+
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(SEARCH_RANDOM_COMMAND_TEXT,
+                SEARCH_RANDOM_COMMAND_TEXT)));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
 
         return inlineKeyboardMarkup;
-    }
-
-    private InlineKeyboardButton getButton(String nameButton, String callBackData){
-        var button = new InlineKeyboardButton();
-
-        button.setText(nameButton);
-        button.setCallbackData(callBackData);
-
-        return button;
     }
 }
