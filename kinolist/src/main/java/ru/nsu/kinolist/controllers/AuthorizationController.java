@@ -1,7 +1,10 @@
 package ru.nsu.kinolist.controllers;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.PersonDAO;
 
 @Component
@@ -13,7 +16,13 @@ public class AuthorizationController {
         this.personDAO = personDAO;
     }
 
-    public void registerNewUser(String chatId) {
-        personDAO.save(chatId);
+    public int registerNewUser(String chatId) {
+        try {
+            personDAO.save(chatId);
+            return 1;
+        }
+        catch (ConstraintViolationException e) {
+            return 0;
+        }
     }
 }

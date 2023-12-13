@@ -1,7 +1,10 @@
 package ru.nsu.kinolist.controllers;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
 import ru.nsu.kinolist.database.DAO.PersonDAO;
 import ru.nsu.kinolist.database.entities.Film;
@@ -13,13 +16,12 @@ import java.util.Random;
 
 @Component
 public class WishListController extends ListController {
-    private final PersonDAO personDAO;
 
     @Autowired
     public WishListController(FilmDAO filmDAO, FilmModificationHandler filmModificationHandler, PersonDAO personDAO) {
-          super(filmModificationHandler, filmDAO);
+        super(filmModificationHandler, filmDAO, personDAO);
       //  this.filmModificationHandler = filmModificationHandler;
-        this.personDAO = personDAO;
+
     }
 
     public Film getRandomFilmByUser(String chatId) {
@@ -28,9 +30,14 @@ public class WishListController extends ListController {
         return films.get(random.nextInt(films.size()));
     }
 
-    public void moveToViewedListByUser(String chatId, Film film) {
-        filmDAO.deleteByChatIdFromList(chatId, film, ListType.WISH);
-        filmDAO.saveByChatIdToList(chatId, film, ListType.VIEWED);
+    public int moveToViewedListByUser(String chatId, Film film) {
+        try {
+            filmDAO.deleteByChatIdFromList(chatId, film, ListType.WISH);
+            filmDAO.saveByChatIdToList(chatId, film, ListType.VIEWED);
+            return 1;
+        }
+        catch (ConstraintViolationException e) {
+            return 0;
+        }
     }
-
 }

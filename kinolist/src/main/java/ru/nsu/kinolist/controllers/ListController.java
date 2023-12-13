@@ -1,9 +1,13 @@
 package ru.nsu.kinolist.controllers;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
+import ru.nsu.kinolist.database.DAO.PersonDAO;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.service.FilmModificationHandler;
 import ru.nsu.kinolist.utils.ListType;
@@ -17,21 +21,40 @@ public class ListController { //@Qualifier("listController") для однозн
 
     protected final FilmDAO filmDAO;
 
+    protected final PersonDAO personDAO;
+
     @Autowired
-    public ListController(FilmModificationHandler filmModificationHandler, FilmDAO filmDAO) {
+    public ListController(FilmModificationHandler filmModificationHandler, FilmDAO filmDAO, PersonDAO personDAO) {
         this.filmModificationHandler = filmModificationHandler;
         this.filmDAO = filmDAO;
+        this.personDAO = personDAO;
     }
 
     public Optional<Film> findFilmByName(String filmName) {
         return filmModificationHandler.findFilm(filmName);
     }
 
-    public void addByUser(String chatId, Film film, ListType listType) {
-        filmDAO.saveByChatIdToList(chatId, film, listType);
+    public int addByUser(String chatId, Film film, ListType listType) {
+        try {
+            filmDAO.saveByChatIdToList(chatId, film, listType);
+            return 1;
+        }
+        catch (ConstraintViolationException e) {
+            return 0;
+        }
     }
 
-    public void removeByUser(String chatId, Film film, ListType listType) {
-        filmDAO.deleteByChatIdFromList(chatId, film, listType);
+    public int removeByUser(String chatId, Film film, ListType listType) {
+        try {
+            filmDAO.deleteByChatIdFromList(chatId, film, listType);
+            return 1;
+        }
+        catch (ConstraintViolationException e) {
+            return 0;
+        }
+    }
+
+    public List<Film> showByUser(String chatId, ListType listType) {
+        return personDAO.getAllFilmsByChatIdFromList(chatId, listType);
     }
 }
