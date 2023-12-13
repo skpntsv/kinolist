@@ -5,6 +5,9 @@ target/
 
 *.log
 
+src/main/resourses/business.properties
+src/main/resourses/hibernate.properties
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
