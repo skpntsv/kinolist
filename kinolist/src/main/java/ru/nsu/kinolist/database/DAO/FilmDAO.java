@@ -33,7 +33,7 @@ public class FilmDAO {
 
     @Transactional
     public void saveByChatIdToList(String chatId, Film film, ListType listType) throws
-            CannotCreateTransactionException, GenericJDBCException {
+            ConstraintViolationException, CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
