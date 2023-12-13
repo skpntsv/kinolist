@@ -12,6 +12,4 @@ import java.util.Optional;
 public interface DataCache {
     void setUsersCurrentBotState(Long chatId, BotState botState);
     BotState getUsersCurrentBotState(Long chatId);
-    void saveSearchFoundedMovies(Long chatId, Film film);
-    Optional<Film> getSearchFoundedMovies(Long chatId);
 }

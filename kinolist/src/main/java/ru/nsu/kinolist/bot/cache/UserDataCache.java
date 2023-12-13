@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class UserDataCache implements DataCache {
     private final Map<Long, BotState> usersBotStates = new ConcurrentHashMap<>();
-    private final Map<Long, Film> foundedFilm = new ConcurrentHashMap<>();
 
     @Override
     public void setUsersCurrentBotState(Long chatId, BotState botState) {
@@ -27,16 +26,7 @@ public class UserDataCache implements DataCache {
         return botState;
     }
 
-    @Override
-    public void saveSearchFoundedMovies(Long chatId, Film film) {
-        foundedFilm.put(chatId, film);
+    public void removeUsersCache(Long chatId) {
+        usersBotStates.remove(chatId);
     }
-
-    @Override
-    public Optional<Film> getSearchFoundedMovies(Long chatId) {
-        Film film = foundedFilm.get(chatId);
-
-        return Optional.ofNullable(film);
-    }
-
 }

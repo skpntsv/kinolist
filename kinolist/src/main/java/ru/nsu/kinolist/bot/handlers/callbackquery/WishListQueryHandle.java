@@ -49,11 +49,11 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                             operation,
                             callbackQuery.getMessage());
                     if (ParseQueryData.hasAck(callbackQuery)) {
+                        userDataCache.removeUsersCache(chatId);     // удаляем состояние этого юзера, освобождаем память
+
                         String ack = ParseQueryData.parseYesOrNo(callbackQuery);
                         if (ack.equals("YES")) {
                             // PLAYLIST|COMMAND|ACK|FILMID
-                            // TODO - считываем айди фильма и добавляем в наш список
-
                             if (wishlistService.addMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
                                 return List.of(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно добавлен"));
                             } else {
@@ -62,7 +62,7 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                         } else if (ack.equals("NO")) {
                             log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
 
-                            userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
+                            //userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
 
                             return List.of(MessagesService.createMessageTemplate(chatId, "Хорошо, не добавляем"));
                         }
@@ -78,12 +78,12 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                             callbackQuery.getMessage());
 
                     if (ParseQueryData.hasAck(callbackQuery)) {
+                        userDataCache.removeUsersCache(chatId);     // удаляем состояние этого юзера, освобождаем память
+
                         String ack = ParseQueryData.parseYesOrNo(callbackQuery);
                         if (ack.equals("YES")) {
                             log.debug("Попытка удалить фильм[] из [WISHLIST]");
                             // PLAYLIST|COMMAND|ACK|FILMID
-                            // TODO - считываем айди фильма и удаляем из нашего списка
-
                             if (wishlistService.removeMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
                                 return List.of(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
                             } else {
@@ -92,12 +92,12 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                         } else if (ack.equals("NO")) {
                             log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
 
-                            userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
+                            //userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
 
                             return List.of(MessagesService.createMessageTemplate(chatId, "Хорошо, не удаляем"));
                         }
                     } else {
-                        userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_REMOVE);
+                        //userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_REMOVE);
 
                         return wishlistService.sendWriteIDMovie(chatId);
                     }
@@ -108,12 +108,12 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                             callbackQuery.getMessage());
 
                     if (ParseQueryData.hasAck(callbackQuery)) {
+                        userDataCache.removeUsersCache(chatId);     // удаляем состояние этого юзера, освобождаем память
+
                         String ack = ParseQueryData.parseYesOrNo(callbackQuery);
                         if (ack.equals("YES")) {
                             log.debug("Попытка удалить фильм[] из [WISHLIST]");
                             // PLAYLIST|COMMAND|ACK|FILMID
-                            // TODO - считываем айди фильма и удаляем из нашего списка
-
                             if (wishlistService.transferMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
                                 return List.of(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно перенесен в ваш список просмотренных"));
                             } else {
@@ -122,7 +122,7 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                         } else if (ack.equals("NO")) {
                             log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
 
-                            userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
+                            //userDataCache.setUsersCurrentBotState(chatId, BotState.SHOW_MAIN_MENU); // TODO нужно сделать возврат на главную страницу
 
                             return List.of(MessagesService.createMessageTemplate(chatId, "Хорошо, не переносим"));
                         }
