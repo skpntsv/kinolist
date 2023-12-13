@@ -74,8 +74,9 @@ public class WishListQueryHandle implements CallbackQueryHandler {
 
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
-                if (wishlistService.addMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
+                if (wishlistService.addMovie(chatId)) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно добавлен"));
+
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
                 }
@@ -85,6 +86,7 @@ public class WishListQueryHandle implements CallbackQueryHandler {
             }
             resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
+            userDataCache.removeCurrentMovieListOfUser(chatId);
             return resultMessages;
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_ADD);
@@ -102,7 +104,7 @@ public class WishListQueryHandle implements CallbackQueryHandler {
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
                 log.debug("Попытка удалить фильм[] из [WISHLIST]");
-                if (wishlistService.removeMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
+                if (wishlistService.removeMovie(chatId)) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
@@ -113,6 +115,7 @@ public class WishListQueryHandle implements CallbackQueryHandler {
             }
             resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
+            userDataCache.removeCurrentMovieListOfUser(chatId);
             return resultMessages;
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_REMOVE);
@@ -130,7 +133,7 @@ public class WishListQueryHandle implements CallbackQueryHandler {
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
                 log.debug("Попытка переместить фильм[] в [WATCHEDLIST]");
-                if (wishlistService.transferMovie(chatId, ParseQueryData.parseFilmId(callbackQuery))) {
+                if (wishlistService.transferMovie(chatId)) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно перенесен в ваш список просмотренных"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
@@ -141,6 +144,7 @@ public class WishListQueryHandle implements CallbackQueryHandler {
             }
             resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
+            userDataCache.removeCurrentMovieListOfUser(chatId);
             return resultMessages;
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_TRANSFER);

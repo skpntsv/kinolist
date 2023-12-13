@@ -4,11 +4,16 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.controllers.ListController;
+import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
+import ru.nsu.kinolist.utils.ListType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,9 +24,13 @@ import java.util.Optional;
 @Service
 public class WishlistService {
     private final ListController listController;
+    private final WishListController wishListController;
+    private final UserDataCache userDataCache;
 
-    public WishlistService(ListController listController) {
+    public WishlistService(ListController listController, WishListController wishListController, UserDataCache userDataCache) {
         this.listController = listController;
+        this.wishListController = wishListController;
+        this.userDataCache = userDataCache;
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> getWishListMessage(Long chatId, Integer messageId) {
@@ -29,7 +38,12 @@ public class WishlistService {
         editedMessage.setChatId(chatId);
         editedMessage.setMessageId(messageId);
 
-        editedMessage.setText(getWishList(chatId));
+        String formattedText = FilmMessageBuilder.formatFilmList(getWishList(chatId));
+        if (formattedText.isEmpty()) {
+            editedMessage.setText("Список пока что пуст");
+        } else {
+            editedMessage.setText(formattedText);
+        }
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
@@ -59,12 +73,6 @@ public class WishlistService {
         return List.of(MessagesService.createMessageTemplate(chatId, "Напишите название фильма/сериала"));
     }
 
-    public List<PartialBotApiMethod<? extends Serializable>> searchMovies(Long chatId, String movieName) {
-        // TODO сделать поиск фильма и выдача соответствующего сообщения
-
-        return null;
-    }
-
     public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
         return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
     }
@@ -73,34 +81,51 @@ public class WishlistService {
         return listController.findFilmByName(movieName);
     }
 
-    public boolean addMovie(Long chatId, int filmId) {
-        // TODO сделать добавление фильма
+    public boolean addMovie(Long chatId) {
+        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
+        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+            if (movies.size() == 1) {
+                listController.addByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
 
+                userDataCache.removeCurrentMovieListOfUser(chatId);
+                return true;
+            }
+        }
 
-        return true; // получилось добавить или нет
+        return false; // получилось добавить или нет
     }
 
-    public boolean transferMovie(Long chatId, int filmIdm) {
-        // TODO сделать перенос фильма
+    public boolean transferMovie(Long chatId) {
+        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
+        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+            if (movies.size() == 1) {
+                wishListController.moveToViewedListByUser(String.valueOf(chatId), movies.get(0));
 
+                userDataCache.removeCurrentMovieListOfUser(chatId);
+                return true;
+            }
+        }
 
         return true; // получилось перенести или нет
     }
 
-    public boolean removeMovie(Long chatId, int filmId) {
-        // TODO сделать удаление фильма из БД
+    public boolean removeMovie(Long chatId) {
+        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
+        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+            if (movies.size() == 1) {
+                listController.removeByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
 
+                userDataCache.removeCurrentMovieListOfUser(chatId);
+                return true;
+            }
+        }
 
         return true; // получилось удалить или нет
     }
 
-    private String getWishList(Long ChatId) {
-        // TODO нужно брать из БД список фильмов
-
-        return """
-                1. Матрица 4
-                2. Побег из Шоушенко
-                3. Рик и Морти (2013-н.в.)
-                """;
+    private List<Film> getWishList(Long chatId) {
+        List<Film> movies = listController.showByUser(String.valueOf(chatId), ListType.WISH);
+        userDataCache.setCurrentMovieListOfUser(chatId, movies);
+        return movies;
     }
 }
