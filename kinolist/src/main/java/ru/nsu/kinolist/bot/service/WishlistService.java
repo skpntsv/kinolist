@@ -2,21 +2,28 @@ package ru.nsu.kinolist.bot.service;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.nsu.kinolist.bot.Film;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.controllers.ListController;
+import ru.nsu.kinolist.database.entities.Film;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WishlistService {
+    private final ListController listController;
+
+    public WishlistService(ListController listController) {
+        this.listController = listController;
+    }
+
     public List<PartialBotApiMethod<? extends Serializable>> getWishListMessage(Long chatId, Integer messageId) {
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
@@ -60,6 +67,10 @@ public class WishlistService {
 
     public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
         return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
+    }
+
+    public Optional<Film> searchMovieByName(String movieName) {
+        return listController.findFilmByName(movieName);
     }
 
     public boolean addMovie(Long chatId, int filmId) {
