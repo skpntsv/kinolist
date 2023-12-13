@@ -61,10 +61,17 @@ public class KinoListBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         List<PartialBotApiMethod<? extends Serializable>> messages = telegramFacade.handleUpdate(update);
 
-        for (PartialBotApiMethod<? extends Serializable> message : messages) {
-            executeMessage((BotApiMethod) message);
-        }
-
+        messages.forEach(response -> {
+            if (response instanceof SendMessage) {
+                executeMessage((SendMessage) response);
+            } else if (response instanceof SendPhoto) {
+                executeMessage((SendPhoto) response);
+            } else if (response instanceof EditMessageText) {
+                executeMessage((EditMessageText) response);
+            } else if (response instanceof EditMessageReplyMarkup) {
+                executeMessage((EditMessageReplyMarkup) response);
+            }
+        });
 
     }
 
@@ -348,7 +355,6 @@ public class KinoListBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION));
         listOfCommands.add(new BotCommand(MENU_COMMAND, MAIN_MENU_COMMAND_TEXT));
         listOfCommands.add(new BotCommand(HELP_COMMAND, HELP_COMMAND_DESCRIPTION));
-        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS_COMMAND, SHOW_PLAYLISTS_COMMAND_DESCRIPTION));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -449,7 +455,37 @@ public class KinoListBot extends TelegramLongPollingBot {
         }
     }
 
-    private boolean executeMessage(BotApiMethod message) {
+    private boolean executeMessage(SendMessage message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(SendPhoto message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(EditMessageText message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(EditMessageReplyMarkup message) {
         try {
             execute(message);
             return true;
