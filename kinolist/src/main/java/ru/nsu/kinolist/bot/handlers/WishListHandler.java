@@ -6,6 +6,9 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
+import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.bot.handlers.callbackquery.ParseQueryData;
+import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.service.WishlistService;
 import ru.nsu.kinolist.bot.util.BotState;
 
@@ -41,15 +44,45 @@ public class WishListHandler implements InputMessageHandler {
         switch (currentBotState) {
             case WISHLIST_ADD -> {
                 String film = message.getText();
-                messages.add(new SendMessage(chatId, "Ты действительно хочешь добавить " + film + " в свой список желаний?"));
+                SendMessage sendMessage = new SendMessage(chatId, "Ты действительно хочешь добавить " + film + " в свой список желаний?");
+                String callBackDataOnYes = ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.ADD.name(),
+                        CallbackQueryType.YES.name(),
+                        "12345");
+                String callBackDataOnNo =  ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.ADD.name(),
+                        CallbackQueryType.NO.name());
+                sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(callBackDataOnYes, callBackDataOnNo));
+
+                messages.add(sendMessage);
             }
             case WISHLIST_TRANSFER -> {
                 String film = message.getText();
-                messages.add(new SendMessage(chatId, "Ты действительно хочешь переместить " + film + " в свой список просмотренных?"));
+                SendMessage sendMessage = new SendMessage(chatId, "Ты действительно хочешь переместить " + film + " в свой список просмотренных?");
+                String callBackDataOnYes = ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.TRANSFER.name(),
+                        CallbackQueryType.YES.name(),
+                        "12345");
+                String callBackDataOnNo =  ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.TRANSFER.name(),
+                        CallbackQueryType.NO.name());
+                sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(callBackDataOnYes, callBackDataOnNo));
+
+                messages.add(sendMessage);
             }
             case WISHLIST_REMOVE -> {
                 String film = message.getText();
-                messages.add(new SendMessage(chatId, "Ты действительно хочешь удалить " + film + " из своего желаний?"));
+                SendMessage sendMessage = new SendMessage(chatId, "Ты действительно хочешь удалить " + film + " из своего желаний?");
+                String callBackDataOnYes = ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.REMOVE.name(),
+                        CallbackQueryType.YES.name(),
+                        "12345");
+                String callBackDataOnNo =  ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(),
+                        CallbackQueryType.REMOVE.name(),
+                        CallbackQueryType.NO.name());
+                sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(callBackDataOnYes, callBackDataOnNo));
+
+                messages.add(sendMessage);
             }
             default -> {
                 log.error("Что-то пошло не так при обратно текста пользователя в состоянии {}", currentBotState);
