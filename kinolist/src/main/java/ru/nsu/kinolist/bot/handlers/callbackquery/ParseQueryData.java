@@ -15,4 +15,7 @@ public class ParseQueryData {
     public static String parseYesOrNo(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[2];
     }
+    public static String createCallbackData(String... parts) {
+        return String.join("|", parts);
+    }
 }
