@@ -67,10 +67,9 @@ public class WishListQueryHandle implements CallbackQueryHandler{
                         } else if (ack.equals("NO")) {
                             log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
 
-                            mainMenuService.getMainMenuMessage(chatId);
-
                             resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не добавляем"));
                         }
+                        resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
                         return resultMessages;
                     } else {
@@ -102,6 +101,7 @@ public class WishListQueryHandle implements CallbackQueryHandler{
 
                             resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не удаляем"));
                         }
+                        resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
                         return resultMessages;
                     } else {
@@ -133,6 +133,7 @@ public class WishListQueryHandle implements CallbackQueryHandler{
 
                             resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не переносим"));
                         }
+                        resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
 
                         return resultMessages;
                     } else {
