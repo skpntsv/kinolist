@@ -37,7 +37,7 @@ public class MainMenuService {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(PLAYLISTS_COMMAND_TEXT,
-                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name()))));
+                ParseQueryData.createCallbackData(CallbackQueryType.SHOW_PLAYLIST.name()))));
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WATCHEDLIST_COMMAND_TEXT,
                 ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name(), CallbackQueryType.ADD.name()))));
