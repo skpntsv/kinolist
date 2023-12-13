@@ -59,7 +59,7 @@ public class TelegramFacade {
         BotState botState;
 
         botState = switch (data) {
-            case "/start" -> BotState.SHOW_MAIN_MENU;
+            case "/start" -> BotState.START;
             case "/help" -> BotState.SHOW_HELP;
             case MENU_COMMAND, MAIN_MENU_COMMAND_TEXT -> BotState.SHOW_MAIN_MENU;
             case SHOW_PLAYLISTS_COMMAND -> BotState.SHOW_PLAYLISTS_MENU;
