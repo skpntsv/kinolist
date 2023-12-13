@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.nsu.kinolist.bot.BotStateContext;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryFacade;
+import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryHandlerFactory;
 import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
 
@@ -21,12 +21,12 @@ import static ru.nsu.kinolist.bot.util.Constants.*;
 public class TelegramFacade {
     private final UserDataCache userDataCache;
     private final BotStateContext botStateContext;
-    private final CallbackQueryFacade callbackQueryFacade;
+    private final CallbackQueryHandlerFactory callbackQueryHandlerFactory;
 
-    public TelegramFacade(UserDataCache userDataCache, BotStateContext botStateContext, CallbackQueryFacade callBackQueryFacade) {
+    public TelegramFacade(UserDataCache userDataCache, BotStateContext botStateContext, CallbackQueryHandlerFactory callBackQueryHandlerFactory) {
         this.userDataCache = userDataCache;
         this.botStateContext = botStateContext;
-        this.callbackQueryFacade = callBackQueryFacade;
+        this.callbackQueryHandlerFactory = callBackQueryHandlerFactory;
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> handleUpdate(Update update) {
@@ -38,7 +38,7 @@ public class TelegramFacade {
                     update.getCallbackQuery().getMessage().getChatId(),
                     update.getCallbackQuery().getData());
 
-            return callbackQueryFacade.processCallbackQuery(update.getCallbackQuery());
+            return callbackQueryHandlerFactory.processCallbackQuery(update.getCallbackQuery());
         }
 
         Message message = update.getMessage();
