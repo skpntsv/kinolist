@@ -13,6 +13,7 @@ import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
 import ru.nsu.kinolist.utils.ListType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,15 +42,36 @@ public class FilmDAO {
 
         switch (listType) {
             case WISH -> {
+                if (person.getWishList() == null) {
+                    person.setWishList(new ArrayList<>());
+                }
                 person.getWishList().add(film);
+
+                if (film.getWishingPeople() == null) {
+                    film.setWishingPeople(new ArrayList<>());
+                }
                 film.getWishingPeople().add(person);
             }
             case TRACKED -> {
+                if (person.getTrackedList() == null) {
+                    person.setTrackedList(new ArrayList<>());
+                }
                 person.getTrackedList().add(film);
+
+                if (film.getTrackingPeople() == null) {
+                    film.setTrackingPeople(new ArrayList<>());
+                }
                 film.getTrackingPeople().add(person);
             }
             case VIEWED -> {
+                if (person.getViewedList() == null) {
+                    person.setViewedList(new ArrayList<>());
+                }
                 person.getViewedList().add(film);
+
+                if (film.getPeopleWhoViewed() == null) {
+                    film.setPeopleWhoViewed(new ArrayList<>());
+                }
                 film.getPeopleWhoViewed().add(person);
             }
         }
