@@ -52,6 +52,12 @@ public class WishlistService {
         return List.of(MessagesService.createMessageTemplate(chatId, "Напишите название фильма/сериала"));
     }
 
+    public List<PartialBotApiMethod<? extends Serializable>> searchMovies(Long chatId, String movieName) {
+        // TODO сделать поиск фильма и выдача соответствующего сообщения
+
+        return null;
+    }
+
     public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
         return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
     }
