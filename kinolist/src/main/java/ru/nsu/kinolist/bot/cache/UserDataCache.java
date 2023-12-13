@@ -21,7 +21,7 @@ public class UserDataCache implements DataCache {
     public BotState getUsersCurrentBotState(Long chatId) {
         BotState botState = usersBotStates.get(chatId);
         if (botState == null) {
-            botState = BotState.SHOW_MAIN_MENU;
+            botState = BotState.IDLE;
         }
 
         return botState;
