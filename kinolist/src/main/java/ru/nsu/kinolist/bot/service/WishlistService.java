@@ -1,14 +1,13 @@
 package ru.nsu.kinolist.bot.service;
 
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.nsu.kinolist.bot.Film;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 
 import java.io.Serializable;
@@ -19,8 +18,6 @@ import java.util.List;
 @Service
 public class WishlistService {
     public List<PartialBotApiMethod<? extends Serializable>> getWishListMessage(Long chatId, Integer messageId) {
-        //sendAction(chatId, ActionType.TYPING);
-
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
         editedMessage.setMessageId(messageId);
@@ -29,7 +26,7 @@ public class WishlistService {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-        // TODO сделать, константы, поставить нормальные callbacks
+
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Добавить фильм/сериал",
                 CallbackQueryType.WISHLIST.name() + "|" + CallbackQueryType.ADD.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Перенести фильм/сериал",
@@ -51,12 +48,33 @@ public class WishlistService {
         return messages;
     }
 
-    public List<PartialBotApiMethod<? extends Serializable>> sendACKMessage(Long chatId, Integer messageId) {
-        List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
+    public List<PartialBotApiMethod<? extends Serializable>> sendSearchMovie(Long chatId, Integer messageId) {
+        return List.of(MessagesService.createMessageTemplate(chatId, "Напишите название фильма/сериала"));
+    }
 
-        messages.add(new SendMessage(chatId.toString(), "Напишите название фильма/сериала"));
+    public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
+        return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
+    }
 
-        return messages;
+    public boolean addMovie(Long chatId, int filmId) {
+        // TODO сделать добавление фильма
+
+
+        return true; // получилось добавить или нет
+    }
+
+    public boolean transferMovie(Long chatId, int filmIdm) {
+        // TODO сделать перенос фильма
+
+
+        return true; // получилось перенести или нет
+    }
+
+    public boolean removeMovie(Long chatId, int filmId) {
+        // TODO сделать удаление фильма из БД
+
+
+        return true; // получилось удалить или нет
     }
 
     private String getWishList(Long ChatId) {
