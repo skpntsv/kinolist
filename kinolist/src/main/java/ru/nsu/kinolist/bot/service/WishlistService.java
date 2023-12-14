@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
@@ -82,12 +81,11 @@ public class WishlistService {
     }
 
     public boolean addMovie(Long chatId) {
-        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
-        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+        List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
+        if (movies != null) {
             if (movies.size() == 1) {
                 listController.addByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
 
-                userDataCache.removeCurrentMovieListOfUser(chatId);
                 return true;
             }
         }
@@ -96,12 +94,11 @@ public class WishlistService {
     }
 
     public boolean transferMovie(Long chatId) {
-        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
-        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+        List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
+        if (movies != null) {
             if (movies.size() == 1) {
                 wishListController.moveToViewedListByUser(String.valueOf(chatId), movies.get(0));
 
-                userDataCache.removeCurrentMovieListOfUser(chatId);
                 return true;
             }
         }
@@ -110,17 +107,16 @@ public class WishlistService {
     }
 
     public boolean removeMovie(Long chatId) {
-        List<Film> movies = userDataCache.getCurrentMovieListOfUser(chatId);
-        if (userDataCache.getCurrentMovieListOfUser(chatId) != null) {
+        List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
+        if (movies != null) {
             if (movies.size() == 1) {
                 listController.removeByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
 
-                userDataCache.removeCurrentMovieListOfUser(chatId);
                 return true;
             }
         }
 
-        return true; // получилось удалить или нет
+        return false; // получилось удалить или нет
     }
 
     private List<Film> getWishList(Long chatId) {
