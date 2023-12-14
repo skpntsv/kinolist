@@ -22,7 +22,8 @@ public class MainMenuHandler implements InputMessageHandler {
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handleMessage(Message message) {
-        userDataCache.setUsersCurrentBotState(message.getChatId(), BotState.IDLE);
+        userDataCache.removeUsersCache(message.getChatId());
+        userDataCache.removeCurrentMovieListOfUser(message.getChatId());
         return mainMenuService.getMainMenuMessage(message.getChatId());
     }
 
