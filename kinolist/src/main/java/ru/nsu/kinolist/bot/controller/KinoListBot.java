@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -26,6 +27,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.nsu.kinolist.bot.util.BotState;
 import ru.nsu.kinolist.bot.util.UserState;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,6 +37,7 @@ import static ru.nsu.kinolist.bot.util.Constants.*;
 @Slf4j
 public class KinoListBot extends TelegramLongPollingBot {
     private Map<Long, UserState> userStates = new ConcurrentHashMap<>();
+    private TelegramFacade telegramFacade;
     private static final String WISHLIST = "Список желаемого";
     private static final String WATCHED_LIST = "Список просмотренного";
     private static final String TRACKED_LIST = "Список отслеживаемого";
@@ -42,8 +45,9 @@ public class KinoListBot extends TelegramLongPollingBot {
     @Value("${bot.name}")
     private String botName;
 
-    public KinoListBot(@Value("${bot.token}") String botToken) {
+    public KinoListBot(@Value("${bot.token}") String botToken, TelegramFacade telegramFacade) {
         super(botToken);
+        this.telegramFacade = telegramFacade;
 
         this.addBotCommands();
     }
@@ -54,17 +58,21 @@ public class KinoListBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public void onUpdateReceived(Update request) {
-        if (request.hasCallbackQuery()) {
-            onCallbackQueryReceived(request.getCallbackQuery());
-        } else {
-            Message message = request.getMessage();
-            if (message != null && message.hasText()) {
-                onInputMessage(message);
+    public void onUpdateReceived(Update update) {
+        List<PartialBotApiMethod<? extends Serializable>> messages = telegramFacade.handleUpdate(update);
+
+        messages.forEach(response -> {
+            if (response instanceof SendMessage) {
+                executeMessage((SendMessage) response);
+            } else if (response instanceof SendPhoto) {
+                executeMessage((SendPhoto) response);
+            } else if (response instanceof EditMessageText) {
+                executeMessage((EditMessageText) response);
+            } else if (response instanceof EditMessageReplyMarkup) {
+                executeMessage((EditMessageReplyMarkup) response);
             }
-        }
-        if (!userStates.isEmpty())
-            log.info(userStates.toString());
+        });
+
     }
 
     private void onInputMessage(Message message) {
@@ -83,13 +91,11 @@ public class KinoListBot extends TelegramLongPollingBot {
     }
 
     private void handleUserInput(Long chatId, String userInput) {
-        log.info("Handling user input [{}] from @{} - {}", userInput, chatId);
-
         UserState userState = userStates.get(chatId);
         if (userState != null) {
             switch (userState.getBotState()) {
                 case IDLE -> unknownCommand(chatId);
-                case AWAITING_INPUT -> handleAwaitingInput(chatId, userState, userInput);
+                case WISHLIST_ADD -> handleAwaitingInput(chatId, userState, userInput);
 
                 default -> unknownCommand(chatId);
             }
@@ -136,7 +142,7 @@ public class KinoListBot extends TelegramLongPollingBot {
         message.setChatId(chatId);
         message.setText(text);
 
-        userState.setBotState(BotState.AWAITING_INPUT);
+        userState.setBotState(BotState.WISHLIST_ADD);
 
         if (executeMessage(message)) {
             log.info("Сообщение [{}] успешно отправлено {}", text, chatId);
@@ -324,6 +330,7 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
+
         return inlineKeyboardMarkup;
     }
 
@@ -348,7 +355,6 @@ public class KinoListBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION));
         listOfCommands.add(new BotCommand(MENU_COMMAND, MAIN_MENU_COMMAND_TEXT));
         listOfCommands.add(new BotCommand(HELP_COMMAND, HELP_COMMAND_DESCRIPTION));
-        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS_COMMAND, SHOW_PLAYLISTS_COMMAND_DESCRIPTION));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
@@ -449,7 +455,37 @@ public class KinoListBot extends TelegramLongPollingBot {
         }
     }
 
-    private boolean executeMessage(BotApiMethodMessage message) {
+    private boolean executeMessage(SendMessage message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(SendPhoto message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(EditMessageText message) {
+        try {
+            execute(message);
+            return true;
+        } catch (TelegramApiException e) {
+            log.error("Ошибка отправки сообщения " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean executeMessage(EditMessageReplyMarkup message) {
         try {
             execute(message);
             return true;

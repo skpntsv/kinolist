@@ -1,9 +1,19 @@
 package ru.nsu.kinolist.bot.util;
 
 public enum BotState {
-    IDLE,             // Начальное состояние
-    AWAITING_INPUT,    // Ожидание ввода от пользователя
-    WORK_ON_WISHLIST,
-    WORK_ON_WATCHEDLIST,
-    WORK_ON_TRACKEDLIST
+    START,
+    SHOW_MAIN_MENU,
+    SHOW_HELP,
+    SHOW_PLAYLISTS_MENU,
+    IDLE,
+    WISHLIST,
+    TRACKEDLIST,
+    WATCHEDLIST,
+    WISHLIST_ADD,
+    WISHLIST_TRANSFER,
+    WISHLIST_REMOVE,
+    WATCHEDLIST_ADD,
+    WATCHEDLIST_REMOVE,
+    TRACKEDLIST_ADD,
+    TRACKED_REMOVE,
 }
