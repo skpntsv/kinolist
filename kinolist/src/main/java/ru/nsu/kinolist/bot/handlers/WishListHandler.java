@@ -112,7 +112,7 @@ public class WishListHandler implements InputMessageHandler {
             return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
         }
 
-        sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + "из своего списка желаемых?");
+        sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + " из своего списка желаемых?");
         sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(CallbackQueryType.WISHLIST, CallbackQueryType.REMOVE, film.getFilmId()));
 
         return sendMessage;
@@ -136,7 +136,7 @@ public class WishListHandler implements InputMessageHandler {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.enableMarkdown(true);
-        sendMessage.setText(FilmMessageBuilder.buildFilmMessage(film));
+        sendMessage.setText(FilmMessageBuilder.buildFilmString(film));
         sendMessage.setReplyMarkup(MessagesService.createYesOrNoButton(CallbackQueryType.WISHLIST, operation, film.getFilmId()));
         messages.add(sendMessage);
 
