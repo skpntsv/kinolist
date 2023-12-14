@@ -16,14 +16,14 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class WishListQueryHandle implements CallbackQueryHandler {
+public class WishListQueryHandler implements CallbackQueryHandler {
     private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.WISHLIST;
 
     private final WishlistService wishlistService;
     private final UserDataCache userDataCache;
     private final MainMenuService mainMenuService;
 
-    public WishListQueryHandle(WishlistService wishlistService, UserDataCache userDataCache, MainMenuService mainMenuService) {
+    public WishListQueryHandler(WishlistService wishlistService, UserDataCache userDataCache, MainMenuService mainMenuService) {
         this.wishlistService = wishlistService;
         this.userDataCache = userDataCache;
         this.mainMenuService = mainMenuService;
