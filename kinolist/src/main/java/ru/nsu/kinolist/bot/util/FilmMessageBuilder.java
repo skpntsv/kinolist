@@ -5,7 +5,7 @@ import ru.nsu.kinolist.database.entities.Film;
 import java.util.List;
 
 public class FilmMessageBuilder {
-    public static String buildFilmMessage(Film film) {
+    public static String buildFilmString(Film film) {
         StringBuilder messageText = new StringBuilder();
 
         messageText.append(film.getFilmName()).append(" (").append(film.getReleaseYear()).append(")\n");

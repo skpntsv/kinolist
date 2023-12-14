@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
  * COMMAND - название плейлиста
  * OPERATION - операция над плейлистом
  * ACK - подтверждение операции
- * FILM_ID - id фильма, с которым будет проводиться выбранная операция
+ * FILM_ID - id фильма, с которым будет проводиться выбранная операция  ** DEPRECATED - теперь мы используешь оперативку для хранения последнего фильма
  *
  * Format of CALLBACKDATA for random - в стадии разработки...
  *
@@ -19,9 +19,12 @@ public class ParseQueryData {
     public static CallbackQueryType parseQueryType(CallbackQuery callbackQuery) {
         return CallbackQueryType.valueOf(callbackQuery.getData().split("\\|")[0]);
     }
-//    public static String parseCommand(CallbackQuery callbackQuery) {
-//        return callbackQuery.getData().split("\\|")[0];
-//    }
+    public static String parseListRandom(CallbackQuery callbackQuery) {
+        return callbackQuery.getData().split("\\|")[1];
+    }
+    public static boolean hasRandomList(CallbackQuery callbackQuery) {
+        return callbackQuery.getData().split("\\|").length > 1;
+    }
     public static String parseOperation(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[1];
     }
