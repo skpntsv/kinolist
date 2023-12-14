@@ -112,15 +112,21 @@ public class FilmDAO {
 
         switch (listType) {
             case WISH -> {
+                Hibernate.initialize(person.getWishList());
                 person.getWishList().remove(film);
+                Hibernate.initialize(film.getWishingPeople());
                 film.getWishingPeople().remove(person);
             }
             case TRACKED -> {
+                Hibernate.initialize(person.getTrackedList());
                 person.getTrackedList().remove(film);
+                Hibernate.initialize(film.getTrackingPeople());
                 film.getTrackingPeople().remove(person);
             }
             case VIEWED -> {
+                Hibernate.initialize(person.getViewedList());
                 person.getViewedList().remove(film);
+                Hibernate.initialize(film.getPeopleWhoViewed());
                 film.getPeopleWhoViewed().remove(person);
             }
         }
