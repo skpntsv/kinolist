@@ -10,7 +10,6 @@ public enum CallbackQueryType {
     REMOVE,
     YES,
     NO,
-    SEARCH_TO_WISHLIST,
-    SEARCH_TO_TRACKEDLIST,
-    SEARCH_TO_WATCHEDLIST,
+    RANDOM,
+    WORLD
 }

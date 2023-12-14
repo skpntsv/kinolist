@@ -49,7 +49,7 @@ public class MainMenuService {
                 ParseQueryData.createCallbackData(CallbackQueryType.TRACKEDLIST.name(), CallbackQueryType.ADD.name()))));
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(SEARCH_RANDOM_COMMAND_TEXT,
-                SEARCH_RANDOM_COMMAND_TEXT)));
+                ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name()))));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
