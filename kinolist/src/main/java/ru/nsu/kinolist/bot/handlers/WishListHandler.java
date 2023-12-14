@@ -80,12 +80,14 @@ public class WishListHandler implements InputMessageHandler {
         List<Film> movies;
         Film film;
         try {
-            movies = userDataCache.getCurrentMovieListOfUser(chatId);
+            movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
             film = movies.get(Integer.parseInt(filmNumber) - 1);
+
+            userDataCache.setCurrentMovieListOfUser(chatId, Collections.singletonList(film));
         } catch (NullPointerException e) {
             return MessagesService.errorMessage(chatId);
         } catch (NumberFormatException e) {
-            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры!");
+            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
         }
 
         sendMessage.setText("Ты действительно хочешь переместить " + film.getFilmName() + " в свой список просмотренных?");
@@ -100,12 +102,14 @@ public class WishListHandler implements InputMessageHandler {
         List<Film> movies;
         Film film;
         try {
-            movies = userDataCache.getCurrentMovieListOfUser(chatId);
+            movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
             film = movies.get(Integer.parseInt(filmNumber) - 1);
+
+            userDataCache.setCurrentMovieListOfUser(chatId, Collections.singletonList(film));
         } catch (NullPointerException e) {
             return MessagesService.errorMessage(chatId);
         } catch (NumberFormatException e) {
-            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры!");
+            return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
         }
 
         sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + "из своего списка желаемых?");
