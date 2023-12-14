@@ -35,6 +35,15 @@ public class UserDataCache implements DataCache {
         movieListOfUser.put(chatId, movies);
     }
 
+    public List<Film> getAndRemoveCurrentMovieListOfUser(Long chatId) {
+        List<Film> movies = movieListOfUser.get(chatId);
+        movieListOfUser.remove(chatId);
+        return movies;
+    }
+
+    /**
+     * DEPRECATED
+     */
     public List<Film> getCurrentMovieListOfUser(Long chatId) {
         return movieListOfUser.get(chatId);
     }
