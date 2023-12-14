@@ -27,7 +27,7 @@ public class FilmDAO {
     }
 
     @Transactional
-    public void save(Film film) throws CannotCreateTransactionException, GenericJDBCException {
+    public void save(Film film) throws CannotCreateTransactionException, GenericJDBCException, ConstraintViolationException {
         Session session = sessionFactory.getCurrentSession();
         session.save(film);
     }
@@ -81,8 +81,8 @@ public class FilmDAO {
     public Optional<Film> getByName(String filmName) throws
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from Film where filmName=:filmName")
-                .setParameter("filmName", filmName).getResultStream().findAny();
+        return session.createQuery("from Film where filmName like :filmName")
+                .setParameter("filmName", filmName+"%").getResultStream().findAny();
     }
 
     @Transactional(readOnly = true)
