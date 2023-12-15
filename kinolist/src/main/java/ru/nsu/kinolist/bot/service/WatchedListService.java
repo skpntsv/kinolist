@@ -10,7 +10,6 @@ import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.controllers.ListController;
-import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.utils.ListType;
 
@@ -47,8 +46,8 @@ public class WatchedListService {
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Добавить фильм/сериал",
                 CallbackQueryType.WATCHEDLIST.name() + "|" + CallbackQueryType.ADD.name())));
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Перенести фильм/сериал",
-                CallbackQueryType.WATCHEDLIST.name() + "|" + CallbackQueryType.TRANSFER.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Удалить фильм/сериал",
+                CallbackQueryType.WATCHEDLIST.name() + "|" + CallbackQueryType.REMOVE.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 

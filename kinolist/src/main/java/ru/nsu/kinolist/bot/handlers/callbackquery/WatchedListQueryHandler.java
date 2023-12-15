@@ -86,7 +86,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
             userDataCache.removeCurrentMovieListOfUser(chatId);
             return resultMessages;
         } else {
-            userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_ADD);
+            userDataCache.setUsersCurrentBotState(chatId, BotState.WATCHEDLIST_ADD);
 
             return watchedListService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
         }
@@ -115,7 +115,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
             userDataCache.removeCurrentMovieListOfUser(chatId);
             return resultMessages;
         } else {
-            userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_REMOVE);
+            userDataCache.setUsersCurrentBotState(chatId, BotState.WATCHEDLIST_REMOVE);
 
             return watchedListService.sendWriteIDMovie(chatId);
         }
