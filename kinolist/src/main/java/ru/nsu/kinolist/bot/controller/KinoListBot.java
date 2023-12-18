@@ -80,7 +80,6 @@ public class KinoListBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION));
         listOfCommands.add(new BotCommand(MENU_COMMAND, MAIN_MENU_COMMAND_TEXT));
         listOfCommands.add(new BotCommand(HELP_COMMAND, HELP_COMMAND_DESCRIPTION));
-        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS_COMMAND, SHOW_PLAYLISTS_COMMAND_DESCRIPTION));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {
