@@ -4,6 +4,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
@@ -39,7 +40,7 @@ public class ListController { //@Qualifier("listController") для однозн
             filmDAO.saveByChatIdToList(chatId, film, listType);
             return 1;
         }
-        catch (ConstraintViolationException e) {
+        catch (DataIntegrityViolationException e) {
             return 0;
         }
     }

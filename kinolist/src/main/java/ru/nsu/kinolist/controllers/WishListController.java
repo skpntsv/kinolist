@@ -3,6 +3,7 @@ package ru.nsu.kinolist.controllers;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
@@ -36,7 +37,7 @@ public class WishListController extends ListController {
             filmDAO.saveByChatIdToList(chatId, film, ListType.VIEWED);
             return 1;
         }
-        catch (ConstraintViolationException e) {
+        catch (DataIntegrityViolationException e) {
             return 0;
         }
     }
