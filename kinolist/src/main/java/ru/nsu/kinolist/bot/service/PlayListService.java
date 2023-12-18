@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.bot.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -21,12 +22,15 @@ import java.util.Optional;
 
 @Service
 public class PlayListService {
-    private final ListController listController;
-    final UserDataCache userDataCache;
-
+    private ListController listController;
+    protected UserDataCache userDataCache;
+    @Autowired
     public PlayListService(ListController listController, UserDataCache userDataCache) {
         this.listController = listController;
         this.userDataCache = userDataCache;
+    }
+
+    public PlayListService() {
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> getListOfPlaylistMessage(Long chatId, Integer messageId, CallbackQueryType playlist) {
@@ -101,13 +105,13 @@ public class PlayListService {
         return false; // получилось удалить или нет
     }
 
-    List<Film> getPlayList(Long chatId, CallbackQueryType playlistType) {
+    protected List<Film> getPlayList(Long chatId, CallbackQueryType playlistType) {
         List<Film> movies = listController.showByUser(String.valueOf(chatId), getListTypeByCallBack(playlistType));
         userDataCache.setCurrentMovieListOfUser(chatId, movies);
         return movies;
     }
 
-    ListType getListTypeByCallBack(CallbackQueryType callbackQueryType) {
+    protected ListType getListTypeByCallBack(CallbackQueryType callbackQueryType) {
         return switch (callbackQueryType) {
             case WISHLIST -> ListType.WISH;
             case WATCHEDLIST -> ListType.VIEWED;

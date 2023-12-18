@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.bot.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -19,13 +20,15 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class WishListService extends PlayListService{
+public class WishListService extends PlayListService {
     private final WishListController wishListController;
-    public WishListService(ListController listController, UserDataCache userDataCache, WishListController wishListController) {
-        super(listController, userDataCache);
+    @Autowired
+    public WishListService(WishListController wishListController, UserDataCache userDataCache) {
+        super(wishListController, userDataCache);
         this.wishListController = wishListController;
     }
 
+    @Override
     public List<PartialBotApiMethod<? extends Serializable>> getListOfPlaylistMessage(Long chatId, Integer messageId, CallbackQueryType playlist) {
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
