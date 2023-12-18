@@ -61,4 +61,10 @@ public class FilmApiService {
         FilmResponseByRandom filmResponseByRandom = randomFilmsResponse.getItems().get(filmIdx);
         return filmResponseByRandom;
     }
+
+    public String sendRequestForDescrById(int kinopoiskId) {
+        HttpEntity<String> request = new HttpEntity<>(headers);
+        String url = "https://kinopoiskapiunofficial.tech/api/v2.2/films/{id}";
+        return Objects.requireNonNull(restTemplate.exchange(url, HttpMethod.GET, request, FilmResponse.class, kinopoiskId).getBody()).getDescription();
+    }
 }
