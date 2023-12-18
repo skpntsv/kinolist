@@ -41,8 +41,7 @@ public class FilmModificationHandler {
             return Optional.of(film);
         }
         catch (ConstraintViolationException e) {
-            System.out.println(film.getFilmName() + " already exists");
-            return Optional.of(film);
+            return filmDAO.getByName(film.getFilmName());
         }
 
     }
