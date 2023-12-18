@@ -17,6 +17,7 @@ import ru.nsu.kinolist.controllers.RandomFilmController;
 import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.filmApi.response.Categories;
+import ru.nsu.kinolist.utils.GenreType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,9 +43,15 @@ public class RandomQueryHandler implements CallbackQueryHandler {
 
                 return sendRandomFilmFromWishList(callbackQuery.getMessage().getChatId());
             } else if (Objects.equals(ParseQueryData.parseListRandom(callbackQuery), CallbackQueryType.WORLD.name())) {
-                return sendAnyRandomFilm(callbackQuery.getMessage().getChatId());
+                if (ParseQueryData.hasRandomGenre(callbackQuery)) {
+                    GenreType genre = GenreType.valueOf(ParseQueryData.parseGenreRandom(callbackQuery));
+                    return sendAnyRandomFilmByGenre(callbackQuery.getMessage().getChatId(), genre);
+                } else {
+                    return sendChoiceGenre(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+                }
             } else {
                 log.info("Неизвестный запрос от пользователя при выборе рандомного фильма {}", callbackQuery.getData());
+
                 return List.of(MessagesService.createMessageTemplate(callbackQuery.getMessage().getChatId(), "Что-то пошло не так, попробуйте ещё раз"));
             }
         }
@@ -68,10 +75,12 @@ public class RandomQueryHandler implements CallbackQueryHandler {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайний из желаемых",
-                CallbackQueryType.RANDOM.name() + "|" + CallbackQueryType.WISHLIST.name())));
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайный по всему интернету",
-                CallbackQueryType.RANDOM.name() + "|" + CallbackQueryType.WORLD.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайный из желаемых",
+                ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WISHLIST.name()))));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайный по всему интернету с любым жанром",
+                ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WORLD.name(), GenreType.ALL.name()))));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайный по всему интернету по жанру",
+                ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WORLD.name()))));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
@@ -93,8 +102,41 @@ public class RandomQueryHandler implements CallbackQueryHandler {
         return List.of(sendPhoto, MessagesService.createMessageTemplate(chatId, FilmMessageBuilder.buildFilmString(film)));
     }
 
-    private List<PartialBotApiMethod<? extends Serializable>> sendAnyRandomFilm(Long chatId) {
-        Film film = randomFilmController.getRandomFilm(new Categories());
+    private List<PartialBotApiMethod<? extends Serializable>> sendChoiceGenre(Long chatId, Integer messageId) {
+        List<List<InlineKeyboardButton>> inlineKeyboard = new ArrayList<>();
+
+        for (GenreType genre : GenreType.values()) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            inlineKeyboard.add(row);
+        }
+
+        InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
+        markupKeyboard.setKeyboard(inlineKeyboard);
+
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+
+        editedMessage.setText("Будем выбирать жанр?");
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        for (GenreType genre : GenreType.values()) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+            row.add(MessagesService.getButton(genre.getName(), ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WORLD.name(), genre.name())));
+            inlineKeyboard.add(row);
+        }
+        inlineKeyboardMarkup.setKeyboard(inlineKeyboard);
+
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
+
+        return List.of(editedMessage, editMessageReplyMarkup);
+    }
+
+    private List<PartialBotApiMethod<? extends Serializable>> sendAnyRandomFilmByGenre(Long chatId, GenreType genre) {
+        Film film = randomFilmController.getRandomFilm(new Categories(genre.getId()));
 
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(chatId);
