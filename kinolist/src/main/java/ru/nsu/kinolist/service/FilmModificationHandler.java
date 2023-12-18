@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.service;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
@@ -35,9 +36,15 @@ public class FilmModificationHandler {
 
         Film film = toFilm(optFilmResponse.get());
         film.setFilmName(film.getFilmName().toLowerCase());
-        filmDAO.save(film);
+        try {
+            filmDAO.save(film);
+            return Optional.of(film);
+        }
+        catch (ConstraintViolationException e) {
+            System.out.println(film.getFilmName() + " already exists");
+            return Optional.of(film);
+        }
 
-        return Optional.of(film);
     }
 
     private Film toFilm(FilmResponse filmResponse) {
