@@ -36,14 +36,10 @@ public class UserDataCache implements DataCache {
     }
 
     public List<Film> getAndRemoveCurrentMovieListOfUser(Long chatId) {
-        List<Film> movies = movieListOfUser.get(chatId);
-        movieListOfUser.remove(chatId);
-        return movies;
+        return movieListOfUser.remove(chatId);
     }
 
-    /**
-     * DEPRECATED
-     */
+    @Deprecated
     public List<Film> getCurrentMovieListOfUser(Long chatId) {
         return movieListOfUser.get(chatId);
     }
