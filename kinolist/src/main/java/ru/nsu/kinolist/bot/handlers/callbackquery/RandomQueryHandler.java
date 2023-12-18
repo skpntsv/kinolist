@@ -20,10 +20,7 @@ import ru.nsu.kinolist.filmApi.response.Categories;
 import ru.nsu.kinolist.utils.GenreType;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -93,7 +90,11 @@ public class RandomQueryHandler implements CallbackQueryHandler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sendRandomFilmFromWishList(Long chatId) {
-        Film film = wishListController.getRandomFilmByUser(String.valueOf(chatId));
+        Optional<Film> movie = wishListController.getRandomFilmByUser(String.valueOf(chatId));
+        if (movie.isEmpty()) {
+            return List.of(MessagesService.createMessageTemplate(chatId, "Ваш список желаемого пуст! Сначала добавьте туда что-нибудь"));
+        }
+        Film film = movie.get();
         // Отправка изображения фильма
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(chatId.toString());
