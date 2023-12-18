@@ -1,18 +1,14 @@
 package ru.nsu.kinolist.controllers;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.GenericJDBCException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.CannotCreateTransactionException;
 import ru.nsu.kinolist.database.DAO.FilmDAO;
 import ru.nsu.kinolist.database.DAO.PersonDAO;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.service.FilmModificationHandler;
 import ru.nsu.kinolist.utils.ListType;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
