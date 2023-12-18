@@ -21,4 +21,8 @@ public class Categories {
     private int yearFrom = 1960;
 
     private int yearTo = LocalDate.now().getYear();
+
+    public Categories(int genre) {
+        this.genre = genre;
+    }
 }

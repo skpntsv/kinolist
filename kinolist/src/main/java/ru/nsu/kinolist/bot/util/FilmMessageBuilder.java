@@ -15,7 +15,7 @@ public class FilmMessageBuilder {
         } else {
             messageText.append("Тип: Фильм\n");
         }
-
+        messageText.append("Жанр: ").append(film.getGenre()).append("\n");
         messageText.append("Рейтинг: ").append(film.getRating()).append("\n");
         messageText.append("Аннотация: ").append(film.getAnnotation()).append("\n");
 

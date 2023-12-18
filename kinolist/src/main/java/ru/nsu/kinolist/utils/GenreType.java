@@ -1,6 +1,10 @@
 package ru.nsu.kinolist.utils;
 
+import lombok.Getter;
+
+@Getter
 public enum GenreType {
+    ALL("Все жанры", 0),
     THRILLER("Триллер", 1),
     DRAMA("Драма", 2),
     CRIMINAL("Криминал", 3),
@@ -21,6 +25,10 @@ public enum GenreType {
     CARTOON("Мультфильм", 18),
     FAMILY("Семейный", 19),
     ANIME("Аниме", 24);
-
-    GenreType(String name, int id) {}
+    GenreType(String name, int id) {
+        this.name = name;
+        this.id = id;
+    }
+    private String name;
+    private int id;
 }
