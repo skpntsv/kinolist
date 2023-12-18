@@ -31,7 +31,7 @@ public class WishListHandler implements InputMessageHandler {
     private final WishlistService wishlistService;
     private final UserDataCache userDataCache;
 
-    public WishListHandler(WishlistService wishlistService, UserDataCache userDataCache, ListController listController, WishListController wishListController) {
+    public WishListHandler(WishlistService wishlistService, UserDataCache userDataCache) {
         this.wishlistService = wishlistService;
         this.userDataCache = userDataCache;
     }
@@ -88,6 +88,8 @@ public class WishListHandler implements InputMessageHandler {
             return MessagesService.errorMessage(chatId);
         } catch (NumberFormatException e) {
             return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
+        } catch (IndexOutOfBoundsException E) {
+            return MessagesService.createMessageTemplate(chatId, "Введите номер, который указан перед названием фильма");
         }
 
         sendMessage.setText("Ты действительно хочешь переместить " + film.getFilmName() + " в свой список просмотренных?");
@@ -110,6 +112,8 @@ public class WishListHandler implements InputMessageHandler {
             return MessagesService.errorMessage(chatId);
         } catch (NumberFormatException e) {
             return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
+        } catch (IndexOutOfBoundsException E) {
+            return MessagesService.createMessageTemplate(chatId, "Введите номер, который указан перед названием фильма");
         }
 
         sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + " из своего списка желаемых?");

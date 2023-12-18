@@ -85,6 +85,8 @@ public class TrackedListHandler implements InputMessageHandler {
             return MessagesService.errorMessage(chatId);
         } catch (NumberFormatException e) {
             return MessagesService.createMessageTemplate(chatId, "Нужно вводить цифры! Попробуйте ещё раз");
+        } catch (IndexOutOfBoundsException E) {
+            return MessagesService.createMessageTemplate(chatId, "Введите номер, который указан перед названием фильма");
         }
 
         sendMessage.setText("Ты действительно хочешь удалить " + film.getFilmName() + " из своего списка желаемых?");
