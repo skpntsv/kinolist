@@ -106,27 +106,28 @@ public class RandomQueryHandler implements CallbackQueryHandler {
     private List<PartialBotApiMethod<? extends Serializable>> sendChoiceGenre(Long chatId, Integer messageId) {
         List<List<InlineKeyboardButton>> inlineKeyboard = new ArrayList<>();
 
+        List<InlineKeyboardButton> row = new ArrayList<>();
+
         for (GenreType genre : GenreType.values()) {
-            List<InlineKeyboardButton> row = new ArrayList<>();
+            row.add(MessagesService.getButton(genre.getName(), ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WORLD.name(), genre.name())));
+
+            if (row.size() == 3) {
+                inlineKeyboard.add(row);
+                row = new ArrayList<>();
+            }
+        }
+
+        if (!row.isEmpty()) {
             inlineKeyboard.add(row);
         }
 
-        InlineKeyboardMarkup markupKeyboard = new InlineKeyboardMarkup();
-        markupKeyboard.setKeyboard(inlineKeyboard);
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        inlineKeyboardMarkup.setKeyboard(inlineKeyboard);
 
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
         editedMessage.setMessageId(messageId);
-
-        editedMessage.setText("Будем выбирать жанр?");
-
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        for (GenreType genre : GenreType.values()) {
-            List<InlineKeyboardButton> row = new ArrayList<>();
-            row.add(MessagesService.getButton(genre.getName(), ParseQueryData.createCallbackData(CallbackQueryType.RANDOM.name(), CallbackQueryType.WORLD.name(), genre.name())));
-            inlineKeyboard.add(row);
-        }
-        inlineKeyboardMarkup.setKeyboard(inlineKeyboard);
+        editedMessage.setText("Что вы предпочитаете?");
 
         EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
         editMessageReplyMarkup.setChatId(chatId);
@@ -135,6 +136,7 @@ public class RandomQueryHandler implements CallbackQueryHandler {
 
         return List.of(editedMessage, editMessageReplyMarkup);
     }
+
 
     private List<PartialBotApiMethod<? extends Serializable>> sendAnyRandomFilmByGenre(Long chatId, GenreType genre) {
         Film film = randomFilmController.getRandomFilm(new Categories(genre.getId()));
