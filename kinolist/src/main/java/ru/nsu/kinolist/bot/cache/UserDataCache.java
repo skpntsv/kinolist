@@ -8,16 +8,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class UserDataCache implements DataCache {
+public class UserDataCache {
     private final Map<Long, BotState> usersBotStates = new ConcurrentHashMap<>();
     private final Map<Long, List<Film>> movieListOfUser = new ConcurrentHashMap<>();
 
-    @Override
     public void setUsersCurrentBotState(Long chatId, BotState botState) {
         usersBotStates.put(chatId, botState);
     }
 
-    @Override
     public BotState getUsersCurrentBotState(Long chatId) {
         BotState botState = usersBotStates.get(chatId);
         if (botState == null) {
@@ -37,11 +35,6 @@ public class UserDataCache implements DataCache {
 
     public List<Film> getAndRemoveCurrentMovieListOfUser(Long chatId) {
         return movieListOfUser.remove(chatId);
-    }
-
-    @Deprecated
-    public List<Film> getCurrentMovieListOfUser(Long chatId) {
-        return movieListOfUser.get(chatId);
     }
 
     public void removeCurrentMovieListOfUser(Long chatId) {
