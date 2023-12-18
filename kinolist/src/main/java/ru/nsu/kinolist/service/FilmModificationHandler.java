@@ -25,7 +25,7 @@ public class FilmModificationHandler {
 
 
     public Optional<Film> findFilm(String filmName) {
-        Optional<Film> filmFromDB = filmDAO.getByName(filmName.toLowerCase());
+        Optional<Film> filmFromDB = filmDAO.getByName(filmName);
         if (filmFromDB.isPresent()) {
             return filmFromDB;
         }
@@ -35,7 +35,7 @@ public class FilmModificationHandler {
         }
 
         Film film = toFilm(optFilmResponse.get());
-        film.setFilmName(film.getFilmName().toLowerCase());
+        film.setFilmName(film.getFilmName());
         try {
             filmDAO.save(film);
             return Optional.of(film);

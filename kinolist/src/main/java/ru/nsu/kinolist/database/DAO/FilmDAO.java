@@ -52,8 +52,8 @@ public class FilmDAO {
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
-        return session.createQuery("from Film where filmName like :filmName")
-                .setParameter("filmName", filmName + "%").getResultStream().findAny();
+        return session.createQuery("from Film where lower(filmName) like :filmName")
+                .setParameter("filmName", filmName.toLowerCase() + "%").getResultStream().findAny();
     }
 
     @Transactional(readOnly = true)

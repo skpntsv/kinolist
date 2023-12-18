@@ -14,6 +14,8 @@ public class FilmResponseByRandom {
 
     private String nameEn;
 
+    private String nameOriginal;
+
     private List<Genre> genres;
 
     private Double ratingKinopoisk;
