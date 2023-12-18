@@ -14,7 +14,6 @@ import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
 import ru.nsu.kinolist.utils.ListType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,6 +70,9 @@ public class FilmDAO {
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
+        film = (Film) session.merge(film);
+        Hibernate.initialize(film.getTrackingPeople());
+
         return film.getTrackingPeople();
     }
 
@@ -79,7 +81,7 @@ public class FilmDAO {
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
-        film = (Film)session.merge(film);
+        film = (Film) session.merge(film);
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
                 .setParameter("chatId", chatId).getSingleResult();
 
