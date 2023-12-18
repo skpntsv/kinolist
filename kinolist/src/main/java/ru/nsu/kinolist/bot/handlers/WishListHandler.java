@@ -28,15 +28,6 @@ public class WishListHandler extends PlayListHandler implements InputMessageHand
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handleMessage(Message message) {
-        return processUsersInput(message);
-    }
-
-    @Override
-    public BotState getHandlerName() {
-        return BotState.WISHLIST;
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> processUsersInput(Message message) {
         BotState currentBotState = userDataCache.getUsersCurrentBotState(message.getChatId());
         userDataCache.removeUsersCache(message.getChatId());    // очистка памяти
         Long chatId = message.getChatId();
@@ -49,6 +40,11 @@ public class WishListHandler extends PlayListHandler implements InputMessageHand
             default -> messages.add(handleDefaultCase(currentBotState, chatId));
         }
         return messages;
+    }
+
+    @Override
+    public BotState getHandlerName() {
+        return BotState.WISHLIST;
     }
 
     private SendMessage processTransferOperation(String filmNumber, Long chatId) {

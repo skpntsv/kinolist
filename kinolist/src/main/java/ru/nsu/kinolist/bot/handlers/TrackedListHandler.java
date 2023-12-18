@@ -24,15 +24,6 @@ public class TrackedListHandler extends PlayListHandler implements InputMessageH
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handleMessage(Message message) {
-        return processUsersInput(message);
-    }
-
-    @Override
-    public BotState getHandlerName() {
-        return BotState.TRACKEDLIST;
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> processUsersInput(Message message) {
         BotState currentBotState = userDataCache.getUsersCurrentBotState(message.getChatId());
         userDataCache.removeUsersCache(message.getChatId());    // очистка памяти
         Long chatId = message.getChatId();
@@ -44,5 +35,10 @@ public class TrackedListHandler extends PlayListHandler implements InputMessageH
             default -> messages.add(handleDefaultCase(currentBotState, chatId));
         }
         return messages;
+    }
+
+    @Override
+    public BotState getHandlerName() {
+        return BotState.TRACKEDLIST;
     }
 }

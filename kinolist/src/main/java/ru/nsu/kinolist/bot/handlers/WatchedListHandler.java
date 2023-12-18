@@ -24,15 +24,6 @@ public class WatchedListHandler extends PlayListHandler implements InputMessageH
 
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handleMessage(Message message) {
-        return processUsersInput(message);
-    }
-
-    @Override
-    public BotState getHandlerName() {
-        return BotState.WATCHEDLIST;
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> processUsersInput(Message message) {
         BotState currentBotState = userDataCache.getUsersCurrentBotState(message.getChatId());
         userDataCache.removeUsersCache(message.getChatId());    // очистка памяти
         Long chatId = message.getChatId();
@@ -45,4 +36,10 @@ public class WatchedListHandler extends PlayListHandler implements InputMessageH
         }
         return messages;
     }
+
+    @Override
+    public BotState getHandlerName() {
+        return BotState.WATCHEDLIST;
+    }
+
 }
