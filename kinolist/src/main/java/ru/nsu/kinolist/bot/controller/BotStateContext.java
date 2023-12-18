@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot;
+package ru.nsu.kinolist.bot.controller;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;

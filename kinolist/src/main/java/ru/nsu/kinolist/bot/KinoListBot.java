@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.controller;
+package ru.nsu.kinolist.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.nsu.kinolist.bot.controller.TelegramFacade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import static ru.nsu.kinolist.bot.util.Constants.*;
 @Component
 @Slf4j
 public class KinoListBot extends TelegramLongPollingBot {
-    private TelegramFacade telegramFacade;
+    private final TelegramFacade telegramFacade;
 
     @Value("${bot.name}")
     private String botName;
