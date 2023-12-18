@@ -1,20 +1,20 @@
 package ru.nsu.kinolist.bot.handlers.callbackquery;
 
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 /**
- * Format of CALLBACKDATA for playlists - COMMAND|OPERATION|ACK|FILM_ID
- * COMMAND - название плейлиста
- * OPERATION - операция над плейлистом
- * ACK - подтверждение операции
- * FILM_ID - id фильма, с которым будет проводиться выбранная операция  ** DEPRECATED - теперь мы используешь оперативку для хранения последнего фильма
+ * Format of CALLBACKDATA for playlists - COMMAND|OPERATION|ACK
+ * COMMAND - название плейлиста.
+ * OPERATION - операция над плейлистом.
+ * ACK - подтверждение операции.
  *
- * Format of CALLBACKDATA for random - в стадии разработки...
+ * Format of CALLBACKDATA for random - RANDOM|LIST|GENRE
+ * RANDOM - команда вызова рандом меню.
+ * LIST - откуда будет осуществлён поиск(все фильмы или из фишлиста).
+ * GENRE - жанр фильма, доступен только в случае поиска фильма по всему интернету
  *
  * @author skpntsv
  */
-@Service
 public class ParseQueryData {
     public static CallbackQueryType parseQueryType(CallbackQuery callbackQuery) {
         return CallbackQueryType.valueOf(callbackQuery.getData().split("\\|")[0]);
@@ -30,9 +30,6 @@ public class ParseQueryData {
     }
     public static String parseYesOrNo(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[2];
-    }
-    public static int parseFilmId(CallbackQuery callbackQuery) {
-        return Integer.parseInt(callbackQuery.getData().split("\\|")[3]);
     }
     public static String createCallbackData(String... parts) {
         return String.join("|", parts);

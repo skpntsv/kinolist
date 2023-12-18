@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.service.MainMenuService;
 import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.WishlistService;
+import ru.nsu.kinolist.bot.service.WishListService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
@@ -16,22 +16,16 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class WishListQueryHandler implements CallbackQueryHandler {
-    private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.WISHLIST;
-
-    private final WishlistService wishlistService;
-    private final UserDataCache userDataCache;
-    private final MainMenuService mainMenuService;
-
-    public WishListQueryHandler(WishlistService wishlistService, UserDataCache userDataCache, MainMenuService mainMenuService) {
-        this.wishlistService = wishlistService;
-        this.userDataCache = userDataCache;
-        this.mainMenuService = mainMenuService;
+public class WishListQueryHandler extends PlayListQueryHandler {
+    WishListService wishListService;
+    public WishListQueryHandler(WishListService wishListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
+        super(wishListService, userDataCache, mainMenuService);
+        this.wishListService = wishListService;
     }
 
     @Override
     public CallbackQueryType getHandlerQueryType() {
-        return HANDLER_QUERY_TYPE;
+        return CallbackQueryType.WISHLIST;
     }
 
     @Override
@@ -45,10 +39,10 @@ public class WishListQueryHandler implements CallbackQueryHandler {
         String operation = ParseQueryData.parseOperation(callbackQuery);
         switch (operation) {
             case "ADD" -> {
-                return handleAddOperation(chatId, callbackQuery);
+                return handleAddOperation(chatId, callbackQuery, BotState.WISHLIST_ADD);
             }
             case "REMOVE" -> {
-                return handleRemoveOperation(chatId, callbackQuery);
+                return handleRemoveOperation(chatId, callbackQuery, BotState.WISHLIST_REMOVE);
             }
             case "TRANSFER" -> {
                 return handleTransferOperation(chatId, callbackQuery);
@@ -57,70 +51,6 @@ public class WishListQueryHandler implements CallbackQueryHandler {
                 log.error("Operation [{}] in callback [{}] not found from chatId [{}]", operation, callbackQuery.getMessage(), chatId);
                 return List.of(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
             }
-        }
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> handlePlaylistCommand(Long chatId, CallbackQuery callbackQuery) {
-        log.info("Send WISHLIST menu to chatId [{}]", chatId);
-
-        return wishlistService.getWishListMessage(chatId, callbackQuery.getMessage().getMessageId());
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> handleAddOperation(Long chatId, CallbackQuery callbackQuery) {
-        log.debug("Transaction Processing [ADD] in CallBackData [{}]", callbackQuery.getMessage());
-        if (ParseQueryData.hasAck(callbackQuery)) {
-            userDataCache.removeUsersCache(chatId);
-            List<PartialBotApiMethod<? extends Serializable>> resultMessages = new ArrayList<>();
-
-            String ack = ParseQueryData.parseYesOrNo(callbackQuery);
-            if (ack.equals("YES")) {
-                if (wishlistService.addMovie(chatId)) {
-                    resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно добавлен"));
-
-                } else {
-                    resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
-                }
-            } else if (ack.equals("NO")) {
-                log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
-                resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не добавляем"));
-            }
-            resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
-
-            userDataCache.removeCurrentMovieListOfUser(chatId);
-            return resultMessages;
-        } else {
-            userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_ADD);
-
-            return wishlistService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
-        }
-    }
-
-    private List<PartialBotApiMethod<? extends Serializable>> handleRemoveOperation(Long chatId, CallbackQuery callbackQuery) {
-        log.debug("Transaction Processing [REMOVE] in CallBackData [{}]", callbackQuery.getMessage());
-        if (ParseQueryData.hasAck(callbackQuery)) {
-            userDataCache.removeUsersCache(chatId);
-            List<PartialBotApiMethod<? extends Serializable>> resultMessages = new ArrayList<>();
-
-            String ack = ParseQueryData.parseYesOrNo(callbackQuery);
-            if (ack.equals("YES")) {
-                log.debug("Попытка удалить фильм[] из [WISHLIST]");
-                if (wishlistService.removeMovie(chatId)) {
-                    resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
-                } else {
-                    resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
-                }
-            } else if (ack.equals("NO")) {
-                log.debug("The chatId [{}] rejected adding a movie, show WISHLIST again", callbackQuery.getMessage().getChatId());
-                resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не удаляем"));
-            }
-            resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));
-
-            userDataCache.removeCurrentMovieListOfUser(chatId);
-            return resultMessages;
-        } else {
-            userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_REMOVE);
-
-            return wishlistService.sendWriteIDMovie(chatId);
         }
     }
 
@@ -133,7 +63,7 @@ public class WishListQueryHandler implements CallbackQueryHandler {
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
                 log.debug("Попытка переместить фильм[] в [WATCHEDLIST]");
-                if (wishlistService.transferMovie(chatId)) {
+                if (wishListService.transferMovie(chatId)) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно перенесен в ваш список просмотренных"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
@@ -149,7 +79,7 @@ public class WishListQueryHandler implements CallbackQueryHandler {
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WISHLIST_TRANSFER);
 
-            return wishlistService.sendWriteIDMovie(chatId);
+            return wishListService.sendWriteIDMovie(chatId);
         }
     }
 }

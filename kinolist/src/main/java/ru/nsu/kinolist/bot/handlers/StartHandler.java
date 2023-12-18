@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
+import ru.nsu.kinolist.bot.util.Constants;
 import ru.nsu.kinolist.controllers.AuthorizationController;
 
 import java.io.Serializable;
@@ -22,9 +23,9 @@ public class StartHandler implements InputMessageHandler {
     public List<PartialBotApiMethod<? extends Serializable>> handleMessage(Message message) {
         int success = authorizationController.registerNewUser(message.getChatId().toString());
         if (success == 1) {
-            return List.of(MessagesService.createMessageTemplate(message.getChatId(), "Добро пожаловать!\nДля ознакомления воспользуйся /help"));
+            return List.of(MessagesService.createMessageTemplate(message.getChatId(), String.format(Constants.START_MESSAGE_NEW_USER, message.getChat().getFirstName())));
         } else {
-            return List.of(MessagesService.createMessageTemplate(message.getChatId(), "Для ознакомления воспользуйся /help"));
+            return List.of(MessagesService.createMessageTemplate(message.getChatId(), Constants.START_MESSAGE_OLD_USER));
         }
     }
 

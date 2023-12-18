@@ -3,6 +3,7 @@ package ru.nsu.kinolist.bot.handlers.callbackquery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -17,7 +18,6 @@ import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.filmApi.response.Categories;
 import ru.nsu.kinolist.filmApi.response.FilmResponseByRandom;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
