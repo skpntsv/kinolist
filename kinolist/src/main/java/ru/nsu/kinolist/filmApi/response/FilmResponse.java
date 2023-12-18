@@ -12,6 +12,8 @@ public class FilmResponse {
 
     private String nameRu;
 
+    private String nameEn;
+
     private String type;
 
     private int year;

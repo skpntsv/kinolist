@@ -22,7 +22,8 @@ public class RandomFilmController {
 
     private Film toFilm(FilmResponseByRandom filmResponseByRandom) {
         String descr = filmApiService.sendRequestForDescrById(filmResponseByRandom.getKinopoiskId());
-        return new Film(filmResponseByRandom.getNameRu(), filmResponseByRandom.getYear(),
+        return new Film(filmResponseByRandom.getNameRu() != null ? filmResponseByRandom.getNameRu() : filmResponseByRandom.getNameEn(),
+                filmResponseByRandom.getYear(),
                 filmResponseByRandom.getGenres().get(0).getGenre(), filmResponseByRandom.getPosterUrl(),
                 filmResponseByRandom.getKinopoiskId(), !filmResponseByRandom.getType().equals("FILM"),
                 filmResponseByRandom.getRatingKinopoisk(), descr);

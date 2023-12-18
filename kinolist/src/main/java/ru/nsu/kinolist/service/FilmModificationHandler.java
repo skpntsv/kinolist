@@ -41,7 +41,7 @@ public class FilmModificationHandler {
     }
 
     private Film toFilm(FilmResponse filmResponse) {
-        return new Film(filmResponse.getNameRu(), filmResponse.getYear(), filmResponse.getGenres().get(0).getGenre(), filmResponse.getPosterUrl(), filmResponse.getFilmId(),
+        return new Film(filmResponse.getNameRu() != null ? filmResponse.getNameRu() : filmResponse.getNameEn(), filmResponse.getYear(), filmResponse.getGenres().get(0).getGenre(), filmResponse.getPosterUrl(), filmResponse.getFilmId(),
                 !filmResponse.getType().equals("FILM"), filmResponse.getRating(), filmResponse.getDescription());
     }
 
