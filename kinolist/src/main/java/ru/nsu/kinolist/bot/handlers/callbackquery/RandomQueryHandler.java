@@ -99,22 +99,22 @@ public class RandomQueryHandler implements CallbackQueryHandler {
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sendAnyRandomFilm(Long chatId) {
-        FilmResponseByRandom movie = randomFilmController.getRandomFilm(new Categories());
+        Film movie = randomFilmController.getRandomFilm(new Categories());
         List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
 
         // Добавление постера
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(chatId);
-        sendPhoto.setPhoto(new InputFile(movie.getPosterUrl()));
+        sendPhoto.setPhoto(new InputFile(movie.getUrl()));
         messages.add(sendPhoto);
 
         // Добавления описания
         StringBuilder messageText = new StringBuilder();
-        messageText.append("Фильм: ").append(movie.getNameRu()).append(" (").append(movie.getYear()).append(")\n");
-        messageText.append("Жанры: ").append(movie.getGenres()).append("\n");
-        messageText.append("Рейтинг (Kinopoisk): ").append(movie.getRatingKinopoisk()).append("\n");
-        messageText.append("Рейтинг (IMDb): ").append(movie.getRatingImdb()).append("\n");
-        messageText.append("Тип: ").append(movie.getType()).append("\n");
+        messageText.append("Фильм: ").append(movie.getFilmName()).append(" (").append(movie.getReleaseYear()).append(")\n");
+        messageText.append("Жанры: ").append(movie.getGenre()).append("\n");
+        messageText.append("Рейтинг (Kinopoisk): ").append(movie.getRating()).append("\n");
+        //messageText.append("Рейтинг (IMDb): ").append(movie.getRatingImdb()).append("\n");
+        messageText.append("Тип: ").append(movie.getIsSeries() ? "Сериал" : "Фильм").append("\n");
 
         // Создаем текстовое сообщение и добавляем его в список сообщений
         SendMessage message = new SendMessage();
