@@ -40,6 +40,6 @@ public class Constants {
                 """;
     public static final String UNKNOWN_MESSAGE = """
                 Не удалось распознать команду!
-                Введите команда /help
+                Введите команду /help
                 """;
 }

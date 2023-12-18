@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.controller;
+package ru.nsu.kinolist.bot;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.nsu.kinolist.bot.controller.TelegramFacade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import static ru.nsu.kinolist.bot.util.Constants.*;
 @Component
 @Slf4j
 public class KinoListBot extends TelegramLongPollingBot {
-    private TelegramFacade telegramFacade;
+    private final TelegramFacade telegramFacade;
 
     @Value("${bot.name}")
     private String botName;
@@ -48,25 +49,25 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         messages.forEach(response -> {
             if (response instanceof SendMessage newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message was sent successfully to User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message was not sent to User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof SendPhoto newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Photo was sent successfully to User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Photo was not sent to User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof EditMessageText newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message edit was successful for User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message edit was not successful for User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof EditMessageReplyMarkup newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message reply markup edit was successful for User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message reply markup edit was not successful for User[{}], content: [{}]", newResponse.getChatId(), response);
@@ -80,7 +81,6 @@ public class KinoListBot extends TelegramLongPollingBot {
         listOfCommands.add(new BotCommand(START_COMMAND, START_COMMAND_DESCRIPTION));
         listOfCommands.add(new BotCommand(MENU_COMMAND, MAIN_MENU_COMMAND_TEXT));
         listOfCommands.add(new BotCommand(HELP_COMMAND, HELP_COMMAND_DESCRIPTION));
-        listOfCommands.add(new BotCommand(SHOW_PLAYLISTS_COMMAND, SHOW_PLAYLISTS_COMMAND_DESCRIPTION));
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e) {

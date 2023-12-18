@@ -2,7 +2,7 @@ package ru.nsu.kinolist.bot.handlers.callbackquery;
 
 public enum CallbackQueryType {
     WISHLIST,
-    WATCHEDLIST,
+    VIEWEDLIST,
     TRACKEDLIST,
     SHOW_PLAYLIST,
     ADD,

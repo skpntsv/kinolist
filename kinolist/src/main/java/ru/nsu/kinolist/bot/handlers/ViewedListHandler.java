@@ -16,9 +16,9 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class WatchedListHandler extends PlayListHandler implements InputMessageHandler {
+public class ViewedListHandler extends PlayListHandler implements InputMessageHandler {
     @Autowired
-    public WatchedListHandler(PlayListService playListService, UserDataCache userDataCache) {
+    public ViewedListHandler(PlayListService playListService, UserDataCache userDataCache) {
         super(playListService, userDataCache);
     }
 
@@ -30,8 +30,8 @@ public class WatchedListHandler extends PlayListHandler implements InputMessageH
         List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
 
         switch (currentBotState) {
-            case WATCHEDLIST_ADD -> processAddOperation(message.getText(), chatId, messages, CallbackQueryType.WATCHEDLIST);
-            case WATCHEDLIST_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.WATCHEDLIST));
+            case VIEWEDLIST_ADD -> processAddOperation(message.getText(), chatId, messages, CallbackQueryType.VIEWEDLIST);
+            case VIEWEDLIST_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.VIEWEDLIST));
             default -> messages.add(handleDefaultCase(currentBotState, chatId));
         }
         return messages;
@@ -39,7 +39,7 @@ public class WatchedListHandler extends PlayListHandler implements InputMessageH
 
     @Override
     public BotState getHandlerName() {
-        return BotState.WATCHEDLIST;
+        return BotState.VIEWEDLIST;
     }
 
 }

@@ -115,7 +115,7 @@ public class PlayListService {
     protected ListType getListTypeByCallBack(CallbackQueryType callbackQueryType) {
         return switch (callbackQueryType) {
             case WISHLIST -> ListType.WISH;
-            case WATCHEDLIST -> ListType.VIEWED;
+            case VIEWEDLIST -> ListType.VIEWED;
             case TRACKEDLIST -> ListType.TRACKED;
             default -> null;
         };

@@ -8,10 +8,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
  * OPERATION - операция над плейлистом.
  * ACK - подтверждение операции.
  *
- * Format of CALLBACKDATA for random - RANDOM|LIST|GENRE
+ * Format of CALLBACKDATA for random - RANDOM|LIST|GENRE_ID
  * RANDOM - команда вызова рандом меню.
  * LIST - откуда будет осуществлён поиск(все фильмы или из фишлиста).
- * GENRE - жанр фильма, доступен только в случае поиска фильма по всему интернету
+ * GENRE_ID - айди жанра фильма, доступен только в случае поиска фильма по всему интернету
  *
  * @author skpntsv
  */
@@ -22,8 +22,14 @@ public class ParseQueryData {
     public static String parseListRandom(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[1];
     }
+    public static String parseGenreRandom(CallbackQuery callbackQuery) {
+        return callbackQuery.getData().split("\\|")[2];
+    }
     public static boolean hasRandomList(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|").length > 1;
+    }
+    public static boolean hasRandomGenre(CallbackQuery callbackQuery) {
+        return callbackQuery.getData().split("\\|").length > 2;
     }
     public static String parseOperation(CallbackQuery callbackQuery) {
         return callbackQuery.getData().split("\\|")[1];

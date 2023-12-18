@@ -5,12 +5,10 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.nsu.kinolist.bot.BotStateContext;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryHandlerFactory;
 import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
-import ru.nsu.kinolist.bot.util.Constants;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -64,7 +62,6 @@ public class TelegramFacade {
             case START_COMMAND -> BotState.START;
             case HELP_COMMAND -> BotState.SHOW_HELP;
             case MENU_COMMAND, MAIN_MENU_COMMAND_TEXT -> BotState.SHOW_MAIN_MENU;
-            case SHOW_PLAYLISTS_COMMAND -> BotState.SHOW_PLAYLISTS_MENU;
             default -> userDataCache.getUsersCurrentBotState(chatId);
         };
 

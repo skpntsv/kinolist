@@ -15,14 +15,14 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class WatchedListQueryHandler extends PlayListQueryHandler {
-    public WatchedListQueryHandler(PlayListService playListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
+public class ViewedListQueryHandler extends PlayListQueryHandler {
+    public ViewedListQueryHandler(PlayListService playListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
         super(playListService, userDataCache, mainMenuService);
     }
 
     @Override
     public CallbackQueryType getHandlerQueryType() {
-        return CallbackQueryType.WATCHEDLIST;
+        return CallbackQueryType.VIEWEDLIST;
     }
 
     @Override
@@ -36,10 +36,10 @@ public class WatchedListQueryHandler extends PlayListQueryHandler {
         String operation = ParseQueryData.parseOperation(callbackQuery);
         switch (operation) {
             case "ADD" -> {
-                return handleAddOperation(chatId, callbackQuery, BotState.WATCHEDLIST_ADD);
+                return handleAddOperation(chatId, callbackQuery, BotState.VIEWEDLIST_ADD);
             }
             case "REMOVE" -> {
-                return handleRemoveOperation(chatId, callbackQuery, BotState.WATCHEDLIST_ADD);
+                return handleRemoveOperation(chatId, callbackQuery, BotState.VIEWEDLIST_ADD);
             }
             default -> {
                 log.error("Operation [{}] in callback [{}] not found from chatId [{}]", operation, callbackQuery.getMessage(), chatId);
