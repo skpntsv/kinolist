@@ -1,6 +1,5 @@
 package ru.nsu.kinolist.database.DAO;
 
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -14,7 +13,6 @@ import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.database.entities.Person;
 import ru.nsu.kinolist.utils.ListType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
