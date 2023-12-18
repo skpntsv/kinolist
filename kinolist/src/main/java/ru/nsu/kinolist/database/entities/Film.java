@@ -56,10 +56,12 @@ public class Film {
                 boolean isSeries, double rating, String annotation) {
         this.filmName = filmName;
         this.releaseYear = releaseYear;
+        this.genre = genre;
         this.url = url;
         this.kinopoiskId = kinopoiskId;
         this.isSeries = isSeries;
         this.rating = rating;
         this.annotation = annotation;
+
     }
 }
