@@ -1,10 +1,9 @@
 package ru.nsu.kinolist.bot.handlers.callbackquery;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import ru.nsu.kinolist.bot.service.PlaylistsService;
+import ru.nsu.kinolist.bot.service.PlaylistsMenuService;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,9 +12,9 @@ import java.util.List;
 public class ShowPlaylistHandler implements CallbackQueryHandler {
     private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.SHOW_PLAYLIST;
 
-    private final PlaylistsService playlistsService;
+    private final PlaylistsMenuService playlistsService;
 
-    public ShowPlaylistHandler(PlaylistsService playlistsService) {
+    public ShowPlaylistHandler(PlaylistsMenuService playlistsService) {
         this.playlistsService = playlistsService;
     }
 

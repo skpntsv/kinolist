@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class PlaylistsService {
+public class PlaylistsMenuService {
     public List<PartialBotApiMethod<? extends Serializable>> getPlaylistMessage(Long chatId, Integer messageId) {
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
