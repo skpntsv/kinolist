@@ -1,9 +1,9 @@
 package ru.nsu.kinolist.bot.handlers.callbackquery;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -17,7 +17,6 @@ import ru.nsu.kinolist.controllers.RandomFilmController;
 import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.filmApi.response.Categories;
-import ru.nsu.kinolist.filmApi.response.FilmResponseByRandom;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import java.util.Objects;
 public class RandomQueryHandler implements CallbackQueryHandler {
     private final RandomFilmController randomFilmController;
     private final WishListController wishListController;
-
+    @Autowired
     public RandomQueryHandler(RandomFilmController randomFilmController, WishListController wishListController) {
         this.randomFilmController = randomFilmController;
         this.wishListController = wishListController;
@@ -69,9 +68,9 @@ public class RandomQueryHandler implements CallbackQueryHandler {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Поиск по вишлисту",
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайний из желаемых",
                 CallbackQueryType.RANDOM.name() + "|" + CallbackQueryType.WISHLIST.name())));
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Поиск по всему интернету",
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Случайный по всему интернету",
                 CallbackQueryType.RANDOM.name() + "|" + CallbackQueryType.WORLD.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
@@ -81,11 +80,7 @@ public class RandomQueryHandler implements CallbackQueryHandler {
         editMessageReplyMarkup.setMessageId(callbackQuery.getMessage().getMessageId());
         editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
 
-        List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
-
-        messages.add(editedMessage);
-        messages.add(editMessageReplyMarkup);
-        return messages;
+        return List.of(editedMessage, editMessageReplyMarkup);
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sendRandomFilmFromWishList(Long chatId) {
@@ -95,33 +90,16 @@ public class RandomQueryHandler implements CallbackQueryHandler {
         sendPhoto.setChatId(chatId.toString());
         sendPhoto.setPhoto(new InputFile(film.getUrl()));
 
-        return List.of(MessagesService.createMessageTemplate(chatId, FilmMessageBuilder.buildFilmString(film)), sendPhoto);
+        return List.of(sendPhoto, MessagesService.createMessageTemplate(chatId, FilmMessageBuilder.buildFilmString(film)));
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> sendAnyRandomFilm(Long chatId) {
-        Film movie = randomFilmController.getRandomFilm(new Categories());
-        List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
+        Film film = randomFilmController.getRandomFilm(new Categories());
 
-        // Добавление постера
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setChatId(chatId);
-        sendPhoto.setPhoto(new InputFile(movie.getUrl()));
-        messages.add(sendPhoto);
+        sendPhoto.setPhoto(new InputFile(film.getUrl()));
 
-        // Добавления описания
-        StringBuilder messageText = new StringBuilder();
-        messageText.append("Фильм: ").append(movie.getFilmName()).append(" (").append(movie.getReleaseYear()).append(")\n");
-        messageText.append("Жанры: ").append(movie.getGenre()).append("\n");
-        messageText.append("Рейтинг (Kinopoisk): ").append(movie.getRating()).append("\n");
-        //messageText.append("Рейтинг (IMDb): ").append(movie.getRatingImdb()).append("\n");
-        messageText.append("Тип: ").append(movie.getIsSeries() ? "Сериал" : "Фильм").append("\n");
-
-        // Создаем текстовое сообщение и добавляем его в список сообщений
-        SendMessage message = new SendMessage();
-        message.setText(messageText.toString());
-        message.setChatId(chatId);
-        messages.add(message);
-
-        return messages;
+        return List.of(sendPhoto, MessagesService.createMessageTemplate(chatId, FilmMessageBuilder.buildFilmString(film)));
     }
 }
