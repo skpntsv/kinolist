@@ -10,7 +10,6 @@ import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-@AllArgsConstructor
 public class Episode {
     private int seasonNumber;
 

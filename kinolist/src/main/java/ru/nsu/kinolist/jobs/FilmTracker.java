@@ -70,9 +70,10 @@ public class FilmTracker {
 
     private Optional<Episode> getInfoByTrackedFilm(Film film) {
         SeasonsResponse seasonsResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId());
+        System.out.println(film.getFilmName() + " " + seasonsResponse.getItems());
         for (Season season: seasonsResponse.getItems()) {
             for (Episode episode: season.getEpisodes()) {
-                if (episode.getReleaseDate().isEqual(LocalDate.now()) ) {
+                if (episode.getReleaseDate() != null && episode.getReleaseDate().isEqual(LocalDate.now()) ) {
                     episode.setFilmName(film.getFilmName());
                     return Optional.of(episode);
                 }
