@@ -22,6 +22,9 @@ public class Film {
     @Column(name = "year")
     private Integer releaseYear;
 
+    @Column(name="genre")
+    private String genre;
+
     @Column(name = "url")
     private String url;
 
@@ -49,7 +52,7 @@ public class Film {
     public Film() {
     }
 
-    public Film(String filmName, int releaseYear, String url, int kinopoiskId,
+    public Film(String filmName, int releaseYear, String genre, String url, int kinopoiskId,
                 boolean isSeries, double rating, String annotation) {
         this.filmName = filmName;
         this.releaseYear = releaseYear;
