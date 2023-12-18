@@ -48,25 +48,25 @@ public class KinoListBot extends TelegramLongPollingBot {
 
         messages.forEach(response -> {
             if (response instanceof SendMessage newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message was sent successfully to User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message was not sent to User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof SendPhoto newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Photo was sent successfully to User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Photo was not sent to User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof EditMessageText newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message edit was successful for User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message edit was not successful for User[{}], content: [{}]", newResponse.getChatId(), response);
                 }
             } else if (response instanceof EditMessageReplyMarkup newResponse) {
-                if (!executeMessage(newResponse)) {
+                if (executeMessage(newResponse)) {
                     log.info("Message reply markup edit was successful for User[{}] content: [{}]", newResponse.getChatId(), response);
                 } else {
                     log.info("Message reply markup edit was not successful for User[{}], content: [{}]", newResponse.getChatId(), response);
