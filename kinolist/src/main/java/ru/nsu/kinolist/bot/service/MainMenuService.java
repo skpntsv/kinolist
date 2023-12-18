@@ -21,7 +21,7 @@ public class MainMenuService {
         SendMessage message = new SendMessage();
         message.enableMarkdown(true);
         message.setChatId(chatId);
-        message.setText("Главное меню:");   // TODO Сделать оформления главного меню
+        message.setText("Главное меню:");
 
         message.setReplyMarkup(createMainInlineButtons());
 
@@ -39,11 +39,11 @@ public class MainMenuService {
         rowsInline.add(Collections.singletonList(MessagesService.getButton(PLAYLISTS_COMMAND_TEXT,
                 ParseQueryData.createCallbackData(CallbackQueryType.SHOW_PLAYLIST.name()))));
 
-        rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WATCHEDLIST_COMMAND_TEXT,
-                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name(), CallbackQueryType.ADD.name()))));
-
         rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WISHLIST_COMMAND_TEXT,
                 ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(), CallbackQueryType.ADD.name()))));
+
+        rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WATCHEDLIST_COMMAND_TEXT,
+                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name(), CallbackQueryType.ADD.name()))));
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_TRACKEDLIST_COMMAND_TEXT,
                 ParseQueryData.createCallbackData(CallbackQueryType.TRACKEDLIST.name(), CallbackQueryType.ADD.name()))));

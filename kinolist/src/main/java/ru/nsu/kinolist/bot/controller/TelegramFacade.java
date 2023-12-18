@@ -10,8 +10,10 @@ import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryHandlerFactory;
 import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
+import ru.nsu.kinolist.bot.util.Constants;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import static ru.nsu.kinolist.bot.util.Constants.*;
@@ -59,8 +61,8 @@ public class TelegramFacade {
         BotState botState;
 
         botState = switch (data) {
-            case "/start" -> BotState.START;
-            case "/help" -> BotState.SHOW_HELP;
+            case START_COMMAND -> BotState.START;
+            case HELP_COMMAND -> BotState.SHOW_HELP;
             case MENU_COMMAND, MAIN_MENU_COMMAND_TEXT -> BotState.SHOW_MAIN_MENU;
             case SHOW_PLAYLISTS_COMMAND -> BotState.SHOW_PLAYLISTS_MENU;
             default -> userDataCache.getUsersCurrentBotState(chatId);
@@ -69,8 +71,7 @@ public class TelegramFacade {
         userDataCache.setUsersCurrentBotState(chatId, botState);
         if (botState == BotState.IDLE) {
             log.info("chatId[{}] write message[{}] from state[{}]", chatId, data, botState);
-            return List.of(MessagesService.createMessageTemplate(chatId,
-                    "Неизвестная команда, пожалуйста, откройте Главное меню или напишите /help"));
+            return Collections.singletonList(MessagesService.createMessageTemplate(chatId, UNKNOWN_MESSAGE));
         }
         return botStateContext.processInputMessage(botState, message);
     }
