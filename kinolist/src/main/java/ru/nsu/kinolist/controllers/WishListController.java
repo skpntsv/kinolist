@@ -12,7 +12,9 @@ import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.service.FilmModificationHandler;
 import ru.nsu.kinolist.utils.ListType;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Component
@@ -25,10 +27,13 @@ public class WishListController extends ListController {
 
     }
 
-    public Film getRandomFilmByUser(String chatId) {
+    public Optional<Film> getRandomFilmByUser(String chatId) {
         List<Film> films = personDAO.getAllFilmsByChatIdFromList(chatId, ListType.WISH);
         Random random = new Random();
-        return films.get(random.nextInt(films.size()));
+        if (films.size() == 0) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(films.get(random.nextInt(films.size())));
     }
 
     public int moveToViewedListByUser(String chatId, Film film) {
