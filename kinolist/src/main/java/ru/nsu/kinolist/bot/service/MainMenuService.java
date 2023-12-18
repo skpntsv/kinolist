@@ -43,7 +43,7 @@ public class MainMenuService {
                 ParseQueryData.createCallbackData(CallbackQueryType.WISHLIST.name(), CallbackQueryType.ADD.name()))));
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_WATCHEDLIST_COMMAND_TEXT,
-                ParseQueryData.createCallbackData(CallbackQueryType.WATCHEDLIST.name(), CallbackQueryType.ADD.name()))));
+                ParseQueryData.createCallbackData(CallbackQueryType.VIEWEDLIST.name(), CallbackQueryType.ADD.name()))));
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton(ADD_TRACKEDLIST_COMMAND_TEXT,
                 ParseQueryData.createCallbackData(CallbackQueryType.TRACKEDLIST.name(), CallbackQueryType.ADD.name()))));

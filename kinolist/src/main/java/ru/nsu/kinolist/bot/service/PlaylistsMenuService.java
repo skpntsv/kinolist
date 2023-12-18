@@ -27,7 +27,7 @@ public class PlaylistsMenuService {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Список желаемого", CallbackQueryType.WISHLIST.name())));
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Список просмотренного", CallbackQueryType.WATCHEDLIST.name())));
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Список просмотренного", CallbackQueryType.VIEWEDLIST.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Список отслеживаемого", CallbackQueryType.TRACKEDLIST.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);

@@ -30,7 +30,7 @@ public class BotStateContext {
             return messageHandlers.get(BotState.TRACKEDLIST);
         }
         if (isWatchedState(currentState)) {
-            return messageHandlers.get(BotState.WATCHEDLIST);
+            return messageHandlers.get(BotState.VIEWEDLIST);
         }
         if (isWishlistState(currentState)) {
             return messageHandlers.get(BotState.WISHLIST);
@@ -53,7 +53,7 @@ public class BotStateContext {
     }
     private boolean isWatchedState(BotState currentState) {
         return switch (currentState) {
-            case WATCHEDLIST_ADD, WATCHEDLIST_REMOVE -> true;
+            case VIEWEDLIST_ADD, VIEWEDLIST_REMOVE -> true;
             default -> false;
         };
     }
