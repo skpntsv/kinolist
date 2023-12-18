@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
-import ru.nsu.kinolist.controllers.ListController;
 import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 

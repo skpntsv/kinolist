@@ -60,19 +60,20 @@ public class PlayListService {
         editMessageReplyMarkup.setMessageId(messageId);
         editMessageReplyMarkup.setReplyMarkup(inlineKeyboardMarkup);
 
-        List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
-
-        messages.add(editedMessage);
-        messages.add(editMessageReplyMarkup);
-        return messages;
+        return List.of(editedMessage, editMessageReplyMarkup);
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> sendSearchMovie(Long chatId, Integer messageId) {
-        return List.of(MessagesService.createMessageTemplate(chatId, "Напишите название фильма/сериала"));
+        EditMessageText editedMessage = new EditMessageText();
+        editedMessage.setChatId(chatId);
+        editedMessage.setMessageId(messageId);
+        editedMessage.setText("Напишите название фильма/сериала");
+
+        return Collections.singletonList(editedMessage);
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
-        return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
+        return Collections.singletonList(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
     }
 
     public Optional<Film> searchMovieByName(String movieName) {

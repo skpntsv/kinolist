@@ -5,11 +5,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 import ru.nsu.kinolist.bot.handlers.callbackquery.ParseQueryData;
-import ru.nsu.kinolist.database.entities.Film;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MessagesService {
     public static InlineKeyboardButton getButton(String nameButton, String callBackData){
@@ -39,15 +37,14 @@ public class MessagesService {
         return sendMessage;
     }
 
-    public static InlineKeyboardMarkup createYesOrNoButton(CallbackQueryType playlist, CallbackQueryType operation, int filmId) {
+    public static InlineKeyboardMarkup createYesOrNoButton(CallbackQueryType playlist, CallbackQueryType operation) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
         // Добавляем кнопку "Да"
         String callBackDataOnYes = ParseQueryData.createCallbackData(playlist.name(),
                 operation.name(),
-                CallbackQueryType.YES.name(),
-                String.valueOf(filmId));
+                CallbackQueryType.YES.name());
         List<InlineKeyboardButton> rowInlineYes = new ArrayList<>();
         rowInlineYes.add(getButton("Да", callBackDataOnYes));
         rowsInline.add(rowInlineYes);

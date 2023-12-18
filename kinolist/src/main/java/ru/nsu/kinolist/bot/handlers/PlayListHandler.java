@@ -14,7 +14,6 @@ import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.database.entities.Film;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -4,21 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
-import ru.nsu.kinolist.bot.service.MessagesService;
 import ru.nsu.kinolist.bot.service.PlayListService;
 import ru.nsu.kinolist.bot.util.BotState;
-import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
-import ru.nsu.kinolist.database.entities.Film;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
