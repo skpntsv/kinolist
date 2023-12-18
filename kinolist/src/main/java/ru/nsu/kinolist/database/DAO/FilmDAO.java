@@ -1,5 +1,6 @@
 package ru.nsu.kinolist.database.DAO;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -69,6 +70,9 @@ public class FilmDAO {
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
+        film = (Film) session.merge(film);
+        Hibernate.initialize(film.getTrackingPeople());
+
         return film.getTrackingPeople();
     }
 
@@ -77,7 +81,7 @@ public class FilmDAO {
             CannotCreateTransactionException, GenericJDBCException {
         Session session = sessionFactory.getCurrentSession();
 
-        film = (Film)session.merge(film);
+        film = (Film) session.merge(film);
         Person person = (Person) session.createQuery("from Person where chatId=:chatId")
                 .setParameter("chatId", chatId).getSingleResult();
 
