@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.service.MainMenuService;
 import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.WatchedListService;
+import ru.nsu.kinolist.bot.service.PlayListService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
@@ -19,12 +19,12 @@ import java.util.List;
 public class WatchedListQueryHandler implements CallbackQueryHandler {
     private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.WATCHEDLIST;
 
-    private final WatchedListService watchedListService;
+    private final PlayListService playListService;
     private final UserDataCache userDataCache;
     private final MainMenuService mainMenuService;
 
-    public WatchedListQueryHandler(WatchedListService watchedListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
-        this.watchedListService = watchedListService;
+    public WatchedListQueryHandler(PlayListService playListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
+        this.playListService = playListService;
         this.userDataCache = userDataCache;
         this.mainMenuService = mainMenuService;
     }
@@ -60,7 +60,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
     private List<PartialBotApiMethod<? extends Serializable>> handlePlaylistCommand(Long chatId, CallbackQuery callbackQuery) {
         log.info("Send WATCHEDLIST menu to chatId [{}]", chatId);
 
-        return watchedListService.getWatchedListMessage(chatId, callbackQuery.getMessage().getMessageId());
+        return playListService.getListOfPlaylistMessage(chatId, callbackQuery.getMessage().getMessageId(), getHandlerQueryType());
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> handleAddOperation(Long chatId, CallbackQuery callbackQuery) {
@@ -71,7 +71,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
 
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
-                if (watchedListService.addMovie(chatId)) {
+                if (playListService.addMovie(chatId, getHandlerQueryType())) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно добавлен"));
 
                 } else {
@@ -88,7 +88,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WATCHEDLIST_ADD);
 
-            return watchedListService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
+            return playListService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
         }
     }
 
@@ -101,7 +101,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
                 log.debug("Попытка удалить фильм[] из [WATCHEDLIST]");
-                if (watchedListService.removeMovie(chatId)) {
+                if (playListService.removeMovie(chatId, getHandlerQueryType())) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
@@ -117,7 +117,7 @@ public class WatchedListQueryHandler implements CallbackQueryHandler {
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.WATCHEDLIST_REMOVE);
 
-            return watchedListService.sendWriteIDMovie(chatId);
+            return playListService.sendWriteIDMovie(chatId);
         }
     }
 }

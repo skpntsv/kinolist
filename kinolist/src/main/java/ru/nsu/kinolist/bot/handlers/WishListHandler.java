@@ -10,11 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.WishlistService;
+import ru.nsu.kinolist.bot.service.WishListService;
 import ru.nsu.kinolist.bot.util.BotState;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
-import ru.nsu.kinolist.controllers.ListController;
-import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
 
 import java.io.Serializable;
@@ -28,10 +26,10 @@ import static ru.nsu.kinolist.bot.service.MessagesService.createMessageTemplate;
 @Slf4j
 @Component
 public class WishListHandler implements InputMessageHandler {
-    private final WishlistService wishlistService;
+    private final WishListService wishlistService;
     private final UserDataCache userDataCache;
 
-    public WishListHandler(WishlistService wishlistService, UserDataCache userDataCache) {
+    public WishListHandler(WishListService wishlistService, UserDataCache userDataCache) {
         this.wishlistService = wishlistService;
         this.userDataCache = userDataCache;
     }

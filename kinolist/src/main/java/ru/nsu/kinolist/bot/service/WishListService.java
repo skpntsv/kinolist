@@ -12,32 +12,26 @@ import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.controllers.ListController;
 import ru.nsu.kinolist.controllers.WishListController;
 import ru.nsu.kinolist.database.entities.Film;
-import ru.nsu.kinolist.utils.ListType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class WishlistService {
-    private final ListController listController;
+public class WishListService extends PlayListService{
     private final WishListController wishListController;
-    private final UserDataCache userDataCache;
-
-    public WishlistService(ListController listController, WishListController wishListController, UserDataCache userDataCache) {
-        this.listController = listController;
+    public WishListService(ListController listController, UserDataCache userDataCache, WishListController wishListController) {
+        super(listController, userDataCache);
         this.wishListController = wishListController;
-        this.userDataCache = userDataCache;
     }
 
-    public List<PartialBotApiMethod<? extends Serializable>> getWishListMessage(Long chatId, Integer messageId) {
+    public List<PartialBotApiMethod<? extends Serializable>> getListOfPlaylistMessage(Long chatId, Integer messageId, CallbackQueryType playlist) {
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
         editedMessage.setMessageId(messageId);
 
-        String formattedText = FilmMessageBuilder.formatFilmList(getWishList(chatId));
+        String formattedText = FilmMessageBuilder.formatFilmList(getPlayList(chatId, playlist));
         if (formattedText.isEmpty()) {
             editedMessage.setText("Список пока что пуст");
         } else {
@@ -48,11 +42,11 @@ public class WishlistService {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Добавить фильм/сериал",
-                CallbackQueryType.WISHLIST.name() + "|" + CallbackQueryType.ADD.name())));
+                playlist.name() + "|" + CallbackQueryType.ADD.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Перенести фильм/сериал",
-                CallbackQueryType.WISHLIST.name() + "|" + CallbackQueryType.TRANSFER.name())));
+                playlist.name() + "|" + CallbackQueryType.TRANSFER.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Удалить фильм/сериал из плейлиста",
-                CallbackQueryType.WISHLIST.name() + "|" + CallbackQueryType.REMOVE.name())));
+                playlist.name() + "|" + CallbackQueryType.REMOVE.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
@@ -68,60 +62,16 @@ public class WishlistService {
         return messages;
     }
 
-    public List<PartialBotApiMethod<? extends Serializable>> sendSearchMovie(Long chatId, Integer messageId) {
-        return List.of(MessagesService.createMessageTemplate(chatId, "Напишите название фильма/сериала"));
-    }
-
-    public List<PartialBotApiMethod<? extends Serializable>> sendWriteIDMovie(Long chatId) {
-        return List.of(MessagesService.createMessageTemplate(chatId, "Введите номер фильма"));
-    }
-
-    public Optional<Film> searchMovieByName(String movieName) {
-        return listController.findFilmByName(movieName);
-    }
-
-    public boolean addMovie(Long chatId) {
-        List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
-        if (movies != null) {
-            if (movies.size() == 1) {
-                listController.addByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
-
-                return true;
-            }
-        }
-
-        return false; // получилось добавить или нет
-    }
-
     public boolean transferMovie(Long chatId) {
         List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
         if (movies != null) {
             if (movies.size() == 1) {
-                wishListController.moveToViewedListByUser(String.valueOf(chatId), movies.get(0));
+                int result = wishListController.moveToViewedListByUser(String.valueOf(chatId), movies.get(0));
 
-                return true;
+                return result == 1;
             }
         }
 
         return true; // получилось перенести или нет
-    }
-
-    public boolean removeMovie(Long chatId) {
-        List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
-        if (movies != null) {
-            if (movies.size() == 1) {
-                listController.removeByUser(String.valueOf(chatId), movies.get(0), ListType.WISH);
-
-                return true;
-            }
-        }
-
-        return false; // получилось удалить или нет
-    }
-
-    private List<Film> getWishList(Long chatId) {
-        List<Film> movies = listController.showByUser(String.valueOf(chatId), ListType.WISH);
-        userDataCache.setCurrentMovieListOfUser(chatId, movies);
-        return movies;
     }
 }

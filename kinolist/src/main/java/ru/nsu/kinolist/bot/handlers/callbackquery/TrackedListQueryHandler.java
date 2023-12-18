@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.service.MainMenuService;
 import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.TrackedListService;
+import ru.nsu.kinolist.bot.service.PlayListService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
@@ -19,12 +19,12 @@ import java.util.List;
 public class TrackedListQueryHandler implements CallbackQueryHandler {
     private static final CallbackQueryType HANDLER_QUERY_TYPE = CallbackQueryType.TRACKEDLIST;
 
-    private final TrackedListService trackedListService;
+    private final PlayListService playListService;
     private final UserDataCache userDataCache;
     private final MainMenuService mainMenuService;
 
-    public TrackedListQueryHandler(TrackedListService trackedListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
-        this.trackedListService = trackedListService;
+    public TrackedListQueryHandler(PlayListService playListService, UserDataCache userDataCache, MainMenuService mainMenuService) {
+        this.playListService = playListService;
         this.userDataCache = userDataCache;
         this.mainMenuService = mainMenuService;
     }
@@ -60,7 +60,7 @@ public class TrackedListQueryHandler implements CallbackQueryHandler {
     private List<PartialBotApiMethod<? extends Serializable>> handlePlaylistCommand(Long chatId, CallbackQuery callbackQuery) {
         log.info("Send TRACKEDLIST menu to chatId [{}]", chatId);
 
-        return trackedListService.getTrackedListMessage(chatId, callbackQuery.getMessage().getMessageId());
+        return playListService.getListOfPlaylistMessage(chatId, callbackQuery.getMessage().getMessageId(), getHandlerQueryType());
     }
 
     private List<PartialBotApiMethod<? extends Serializable>> handleAddOperation(Long chatId, CallbackQuery callbackQuery) {
@@ -71,7 +71,7 @@ public class TrackedListQueryHandler implements CallbackQueryHandler {
 
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
-                if (trackedListService.addMovie(chatId)) {
+                if (playListService.addMovie(chatId, getHandlerQueryType())) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно добавлен"));
 
                 } else {
@@ -88,7 +88,7 @@ public class TrackedListQueryHandler implements CallbackQueryHandler {
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.TRACKEDLIST_ADD);
 
-            return trackedListService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
+            return playListService.sendSearchMovie(chatId, callbackQuery.getMessage().getMessageId());
         }
     }
 
@@ -101,7 +101,7 @@ public class TrackedListQueryHandler implements CallbackQueryHandler {
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
                 log.debug("Попытка удалить фильм[] из [TRACKEDLIST]");
-                if (trackedListService.removeMovie(chatId)) {
+                if (playListService.removeMovie(chatId, getHandlerQueryType())) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
@@ -117,7 +117,7 @@ public class TrackedListQueryHandler implements CallbackQueryHandler {
         } else {
             userDataCache.setUsersCurrentBotState(chatId, BotState.TRACKED_REMOVE);
 
-            return trackedListService.sendWriteIDMovie(chatId);
+            return playListService.sendWriteIDMovie(chatId);
         }
     }
 }

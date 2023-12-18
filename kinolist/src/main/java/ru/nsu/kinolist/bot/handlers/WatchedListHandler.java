@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
 import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
 import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.WatchedListService;
+import ru.nsu.kinolist.bot.service.PlayListService;
 import ru.nsu.kinolist.bot.util.BotState;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.database.entities.Film;
@@ -26,11 +26,11 @@ import static ru.nsu.kinolist.bot.service.MessagesService.createMessageTemplate;
 @Slf4j
 @Component
 public class WatchedListHandler implements InputMessageHandler {
-    private final WatchedListService watchedListService;
+    private final PlayListService playListService;
     private final UserDataCache userDataCache;
 
-    public WatchedListHandler(WatchedListService watchedListService, UserDataCache userDataCache) {
-        this.watchedListService = watchedListService;
+    public WatchedListHandler(PlayListService playListService, UserDataCache userDataCache) {
+        this.playListService = playListService;
         this.userDataCache = userDataCache;
     }
 
@@ -60,7 +60,7 @@ public class WatchedListHandler implements InputMessageHandler {
     }
 
     private void processAddOperation(String filmName, Long chatId, List<PartialBotApiMethod<? extends Serializable>> messages) {
-        Optional<Film> movie = watchedListService.searchMovieByName(filmName);
+        Optional<Film> movie = playListService.searchMovieByName(filmName);
         if (movie.isPresent()) {
             Film film = movie.get();
 

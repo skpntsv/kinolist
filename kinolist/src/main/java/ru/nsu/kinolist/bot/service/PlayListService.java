@@ -20,21 +20,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TrackedListService {
+public class PlayListService {
     private final ListController listController;
-    private final UserDataCache userDataCache;
+    final UserDataCache userDataCache;
 
-    public TrackedListService(ListController listController, UserDataCache userDataCache) {
+    public PlayListService(ListController listController, UserDataCache userDataCache) {
         this.listController = listController;
         this.userDataCache = userDataCache;
     }
 
-    public List<PartialBotApiMethod<? extends Serializable>> getTrackedListMessage(Long chatId, Integer messageId) {
+    public List<PartialBotApiMethod<? extends Serializable>> getListOfPlaylistMessage(Long chatId, Integer messageId, CallbackQueryType playlist) {
         EditMessageText editedMessage = new EditMessageText();
         editedMessage.setChatId(chatId);
         editedMessage.setMessageId(messageId);
 
-        String formattedText = FilmMessageBuilder.formatFilmList(getTrackedList(chatId));
+        String formattedText = FilmMessageBuilder.formatFilmList(getPlayList(chatId, playlist));
         if (formattedText.isEmpty()) {
             editedMessage.setText("Список пока что пуст");
         } else {
@@ -45,9 +45,9 @@ public class TrackedListService {
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Добавить фильм/сериал",
-                CallbackQueryType.TRACKEDLIST.name() + "|" + CallbackQueryType.ADD.name())));
+                playlist.name() + "|" + CallbackQueryType.ADD.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Удалить фильм/сериал",
-                CallbackQueryType.TRACKEDLIST.name() + "|" + CallbackQueryType.REMOVE.name())));
+                playlist.name() + "|" + CallbackQueryType.REMOVE.name())));
 
         inlineKeyboardMarkup.setKeyboard(rowsInline);
 
@@ -75,35 +75,44 @@ public class TrackedListService {
         return listController.findFilmByName(movieName);
     }
 
-    public boolean addMovie(Long chatId) {
+    public boolean addMovie(Long chatId, CallbackQueryType playlistType) {
         List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
         if (movies != null) {
             if (movies.size() == 1) {
-                listController.addByUser(String.valueOf(chatId), movies.get(0), ListType.TRACKED);
+                int result = listController.addByUser(String.valueOf(chatId), movies.get(0), getListTypeByCallBack(playlistType));
 
-                return true;
+                return result == 1;
             }
         }
 
         return false; // получилось добавить или нет
     }
 
-    public boolean removeMovie(Long chatId) {
+    public boolean removeMovie(Long chatId, CallbackQueryType playlistType) {
         List<Film> movies = userDataCache.getAndRemoveCurrentMovieListOfUser(chatId);
         if (movies != null) {
             if (movies.size() == 1) {
-                listController.removeByUser(String.valueOf(chatId), movies.get(0), ListType.TRACKED);
+                int result = listController.removeByUser(String.valueOf(chatId), movies.get(0), getListTypeByCallBack(playlistType));
 
-                return true;
+                return result == 1;
             }
         }
 
         return false; // получилось удалить или нет
     }
 
-    private List<Film> getTrackedList(Long chatId) {
-        List<Film> movies = listController.showByUser(String.valueOf(chatId), ListType.TRACKED);
+    List<Film> getPlayList(Long chatId, CallbackQueryType playlistType) {
+        List<Film> movies = listController.showByUser(String.valueOf(chatId), getListTypeByCallBack(playlistType));
         userDataCache.setCurrentMovieListOfUser(chatId, movies);
         return movies;
+    }
+
+    ListType getListTypeByCallBack(CallbackQueryType callbackQueryType) {
+        return switch (callbackQueryType) {
+            case WISHLIST -> ListType.WISH;
+            case WATCHEDLIST -> ListType.VIEWED;
+            case TRACKEDLIST -> ListType.TRACKED;
+            default -> null;
+        };
     }
 }
