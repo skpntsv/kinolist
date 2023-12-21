@@ -17,6 +17,8 @@ public class Episode {
 
     private String nameRu;
 
+    private String nameEn;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
 

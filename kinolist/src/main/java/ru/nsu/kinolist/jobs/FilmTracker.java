@@ -45,7 +45,7 @@ public class FilmTracker {
 
     private final ArrayList<Film> checkedFilmsToday = new ArrayList<>();
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 12 * * * *")
     private void checkInfoForTrackedFilms() {
         List<Film> filmList = filmDAO.getAllFilmsFromTracking();
         for (Film film: filmList) {
@@ -84,7 +84,7 @@ public class FilmTracker {
     private void sendMessageToBot(String chatId, Episode episode) {
         String message = NOTIFICATION + "\n"
                 +"Сериал: \"" + episode.getFilmName() + "\"\n"
-                + "\"" + episode.getNameRu() + "\", " + episode.getEpisodeNumber() + " серия " + episode.getSeasonNumber() + " сезона.";
+                + "\"" + (episode.getNameRu() != null ? episode.getNameRu() : episode.getNameEn()) + "\", " + episode.getEpisodeNumber() + " серия " + episode.getSeasonNumber() + " сезона.";
       //  System.out.println(INFO_BOT_TOKEN + " TOKKEN");
         String url = "https://api.telegram.org/bot"+ INFO_BOT_TOKEN + "/sendMessage?chat_id="+ chatId + "&text=" + message;
         restTemplate.getForObject(url, String.class);

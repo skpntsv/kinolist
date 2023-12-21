@@ -45,7 +45,7 @@ public class WishListService extends PlayListService {
 
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Добавить фильм/сериал",
                 playlist.name() + "|" + CallbackQueryType.ADD.name())));
-        rowsInline.add(Collections.singletonList(MessagesService.getButton("Перенести фильм/сериал",
+        rowsInline.add(Collections.singletonList(MessagesService.getButton("Перенести фильм/сериал в просмотренное",
                 playlist.name() + "|" + CallbackQueryType.TRANSFER.name())));
         rowsInline.add(Collections.singletonList(MessagesService.getButton("Удалить фильм/сериал из плейлиста",
                 playlist.name() + "|" + CallbackQueryType.REMOVE.name())));
