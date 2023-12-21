@@ -41,7 +41,7 @@ public class TrackedListQueryHandler extends PlayListQueryHandler {
                 return handleAddOperation(chatId, callbackQuery, BotState.TRACKEDLIST_ADD);
             }
             case "REMOVE" -> {
-                return handleRemoveOperation(chatId, callbackQuery, BotState.TRACKED_REMOVE);
+                return handleRemoveOperation(chatId, callbackQuery, BotState.TRACKEDLIST_REMOVE);
             }
             default -> {
                 log.error("Operation [{}] in callback [{}] not found from chatId [{}]", operation, callbackQuery.getMessage(), chatId);

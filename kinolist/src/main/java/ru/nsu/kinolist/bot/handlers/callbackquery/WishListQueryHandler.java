@@ -62,7 +62,7 @@ public class WishListQueryHandler extends PlayListQueryHandler {
 
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
-                log.debug("Попытка переместить фильм[] в [WATCHEDLIST]");
+                log.debug("Попытка переместить фильм[] в [VIEWEDLIST]");
                 if (wishListService.transferMovie(chatId)) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно перенесен в ваш список просмотренных"));
                 } else {

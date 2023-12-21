@@ -60,21 +60,21 @@ public abstract class PlayListQueryHandler implements CallbackQueryHandler {
     }
 
     protected List<PartialBotApiMethod<? extends Serializable>> handleRemoveOperation(Long chatId, CallbackQuery callbackQuery, BotState newBotState) {
-        log.debug("Transaction Processing [REMOVE] in CallBackData [{}]", callbackQuery.getMessage());
+        log.debug("Transaction Processing [] in CallBackData [{}]", callbackQuery.getMessage());
         if (ParseQueryData.hasAck(callbackQuery)) {
             userDataCache.removeUsersCache(chatId);
             List<PartialBotApiMethod<? extends Serializable>> resultMessages = new ArrayList<>();
 
             String ack = ParseQueryData.parseYesOrNo(callbackQuery);
             if (ack.equals("YES")) {
-                log.debug("Попытка удалить фильм[] из [TRACKEDLIST]");
+                log.debug("Попытка удалить фильм[] из []");
                 if (playListService.removeMovie(chatId, getHandlerQueryType())) {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Фильм/сериал успешно удален"));
                 } else {
                     resultMessages.add(MessagesService.createMessageTemplate(chatId, "Что-то пошло не так, попробуйте ещё раз"));
                 }
             } else if (ack.equals("NO")) {
-                log.debug("The chatId [{}] rejected adding a movie, show TRACKEDLIST again", callbackQuery.getMessage().getChatId());
+                log.debug("The chatId [{}] rejected adding a movie, show  again", callbackQuery.getMessage().getChatId());
                 resultMessages.add(MessagesService.createMessageTemplate(chatId, "Хорошо, не удаляем"));
             }
             resultMessages.addAll(mainMenuService.getMainMenuMessage(chatId));

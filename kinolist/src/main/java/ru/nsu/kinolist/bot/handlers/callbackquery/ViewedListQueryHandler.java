@@ -39,7 +39,7 @@ public class ViewedListQueryHandler extends PlayListQueryHandler {
                 return handleAddOperation(chatId, callbackQuery, BotState.VIEWEDLIST_ADD);
             }
             case "REMOVE" -> {
-                return handleRemoveOperation(chatId, callbackQuery, BotState.VIEWEDLIST_ADD);
+                return handleRemoveOperation(chatId, callbackQuery, BotState.VIEWEDLIST_REMOVE);
             }
             default -> {
                 log.error("Operation [{}] in callback [{}] not found from chatId [{}]", operation, callbackQuery.getMessage(), chatId);

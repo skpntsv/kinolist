@@ -47,7 +47,7 @@ public class BotStateContext {
     }
     private boolean isTrackedListState(BotState currentState) {
         return switch (currentState) {
-            case TRACKED_REMOVE, TRACKEDLIST_ADD -> true;
+            case TRACKEDLIST_REMOVE, TRACKEDLIST_ADD -> true;
             default -> false;
         };
     }

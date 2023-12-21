@@ -31,7 +31,7 @@ public class TrackedListHandler extends PlayListHandler implements InputMessageH
 
         switch (currentBotState) {
             case TRACKEDLIST_ADD -> processAddOperation(message.getText(), chatId, messages, CallbackQueryType.TRACKEDLIST);
-            case TRACKED_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.TRACKEDLIST));
+            case TRACKEDLIST_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.TRACKEDLIST));
             default -> messages.add(handleDefaultCase(currentBotState, chatId));
         }
         return messages;
