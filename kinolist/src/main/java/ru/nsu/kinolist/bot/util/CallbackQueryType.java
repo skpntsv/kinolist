@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.handlers.callbackquery;
+package ru.nsu.kinolist.bot.util;
 
 public enum CallbackQueryType {
     WISHLIST,

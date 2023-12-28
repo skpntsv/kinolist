@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.handlers;
+package ru.nsu.kinolist.bot.handlers.playlists.inputmessage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
-import ru.nsu.kinolist.bot.service.PlayListService;
+import ru.nsu.kinolist.bot.handlers.InputMessageHandler;
+import ru.nsu.kinolist.bot.handlers.playlists.PlayListHandler;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.handlers.playlists.PlayListService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
@@ -16,9 +18,9 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class TrackedListHandler extends PlayListHandler implements InputMessageHandler {
+public class ViewedListHandler extends PlayListHandler implements InputMessageHandler {
     @Autowired
-    public TrackedListHandler(PlayListService playListService, UserDataCache userDataCache) {
+    public ViewedListHandler(PlayListService playListService, UserDataCache userDataCache) {
         super(playListService, userDataCache);
     }
 
@@ -30,8 +32,8 @@ public class TrackedListHandler extends PlayListHandler implements InputMessageH
         List<PartialBotApiMethod<? extends Serializable>> messages = new ArrayList<>();
 
         switch (currentBotState) {
-            case TRACKEDLIST_ADD -> processAddOperation(message.getText(), chatId, messages, CallbackQueryType.TRACKEDLIST);
-            case TRACKEDLIST_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.TRACKEDLIST));
+            case VIEWEDLIST_ADD -> processAddOperation(message.getText(), chatId, messages, CallbackQueryType.VIEWEDLIST);
+            case VIEWEDLIST_REMOVE -> messages.add(processRemoveOperation(message.getText(), chatId, CallbackQueryType.VIEWEDLIST));
             default -> messages.add(handleDefaultCase(currentBotState, chatId));
         }
         return messages;
@@ -39,6 +41,7 @@ public class TrackedListHandler extends PlayListHandler implements InputMessageH
 
     @Override
     public BotState getHandlerName() {
-        return BotState.TRACKEDLIST;
+        return BotState.VIEWEDLIST;
     }
+
 }

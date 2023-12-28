@@ -7,12 +7,8 @@ public class Constants {
     public static final String HELP_COMMAND = "/help";
     public static final String HELP_COMMAND_DESCRIPTION = "Помощь";
 
-    public static final String SHOW_PLAYLISTS_COMMAND = "/show_playlists";
-    public static final String SHOW_PLAYLISTS_COMMAND_DESCRIPTION = "Показать мои плейлисты";
-
     public static final String MENU_COMMAND = "/menu";
     public static final String MAIN_MENU_COMMAND_TEXT = "Главное меню";
-
 
     public static final String PLAYLISTS_COMMAND_TEXT = "Мои плейлисты";
     public static final String ADD_WATCHEDLIST_COMMAND_TEXT = "Добавить в список просмотренных";

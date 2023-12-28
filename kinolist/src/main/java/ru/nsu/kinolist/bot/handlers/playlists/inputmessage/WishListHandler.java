@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.handlers;
+package ru.nsu.kinolist.bot.handlers.playlists.inputmessage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +7,11 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
-import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.WishListService;
+import ru.nsu.kinolist.bot.handlers.InputMessageHandler;
+import ru.nsu.kinolist.bot.handlers.playlists.PlayListHandler;
+import ru.nsu.kinolist.bot.handlers.playlists.WishListService;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
 import ru.nsu.kinolist.database.entities.Film;
 

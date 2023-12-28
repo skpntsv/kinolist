@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.handlers;
+package ru.nsu.kinolist.bot.handlers.playlists;
 
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -6,9 +6,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
-import ru.nsu.kinolist.bot.service.MessagesService;
-import ru.nsu.kinolist.bot.service.PlayListService;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.database.entities.Film;
@@ -18,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.nsu.kinolist.bot.service.MessagesService.createMessageTemplate;
+import static ru.nsu.kinolist.bot.util.MessagesService.createMessageTemplate;
 
 @Slf4j
 public abstract class PlayListHandler {

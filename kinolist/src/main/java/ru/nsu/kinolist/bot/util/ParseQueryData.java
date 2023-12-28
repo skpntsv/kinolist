@@ -1,13 +1,14 @@
-package ru.nsu.kinolist.bot.handlers.callbackquery;
+package ru.nsu.kinolist.bot.util;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
 
 /**
  * Format of CALLBACKDATA for playlists - COMMAND|OPERATION|ACK
  * COMMAND - название плейлиста.
  * OPERATION - операция над плейлистом.
  * ACK - подтверждение операции.
- *
+ * ----------------------------------------------------------
  * Format of CALLBACKDATA for random - RANDOM|LIST|GENRE_ID
  * RANDOM - команда вызова рандом меню.
  * LIST - откуда будет осуществлён поиск(все фильмы или из фишлиста).

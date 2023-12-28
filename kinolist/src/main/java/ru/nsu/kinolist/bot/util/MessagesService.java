@@ -1,10 +1,10 @@
-package ru.nsu.kinolist.bot.service;
+package ru.nsu.kinolist.bot.util;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
-import ru.nsu.kinolist.bot.handlers.callbackquery.ParseQueryData;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.ParseQueryData;
 
 import java.util.ArrayList;
 import java.util.List;

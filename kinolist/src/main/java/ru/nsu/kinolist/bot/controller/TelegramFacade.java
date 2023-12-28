@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryHandlerFactory;
-import ru.nsu.kinolist.bot.service.MessagesService;
+import ru.nsu.kinolist.bot.handlers.CallbackQueryHandlerFactory;
+import ru.nsu.kinolist.bot.util.MessagesService;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;

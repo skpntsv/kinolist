@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.service;
+package ru.nsu.kinolist.bot.handlers.playlists;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,8 +8,9 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
+import ru.nsu.kinolist.bot.util.MessagesService;
 import ru.nsu.kinolist.controllers.ListController;
 import ru.nsu.kinolist.database.entities.Film;
 import ru.nsu.kinolist.utils.ListType;

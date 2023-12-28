@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.handlers.callbackquery;
+package ru.nsu.kinolist.bot.handlers.random;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.nsu.kinolist.bot.service.MessagesService;
+import ru.nsu.kinolist.bot.handlers.CallbackQueryHandler;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.ParseQueryData;
+import ru.nsu.kinolist.bot.util.MessagesService;
 import ru.nsu.kinolist.bot.util.FilmMessageBuilder;
 import ru.nsu.kinolist.controllers.RandomFilmController;
 import ru.nsu.kinolist.controllers.WishListController;

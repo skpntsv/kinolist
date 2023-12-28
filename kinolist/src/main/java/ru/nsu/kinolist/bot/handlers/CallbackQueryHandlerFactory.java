@@ -1,15 +1,15 @@
-package ru.nsu.kinolist.bot.handlers.callbackquery;
+package ru.nsu.kinolist.bot.handlers;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import ru.nsu.kinolist.bot.service.MessagesService;
+import ru.nsu.kinolist.bot.util.MessagesService;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.ParseQueryData;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-
-import static ru.nsu.kinolist.bot.handlers.callbackquery.ParseQueryData.parseQueryType;
 
 @Component
 public class CallbackQueryHandlerFactory {
@@ -19,7 +19,7 @@ public class CallbackQueryHandlerFactory {
     }
 
     public List<PartialBotApiMethod<? extends Serializable>> processCallbackQuery(CallbackQuery queryType) {
-        CallbackQueryType usersQueryType = parseQueryType(queryType);
+        CallbackQueryType usersQueryType = ParseQueryData.parseQueryType(queryType);
 
         Optional<CallbackQueryHandler> queryHandler = callbackQueryHandlers.stream().
                 filter(callbackQuery -> callbackQuery.getHandlerQueryType().equals(usersQueryType)).findFirst();

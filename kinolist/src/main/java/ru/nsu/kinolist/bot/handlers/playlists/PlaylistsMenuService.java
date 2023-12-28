@@ -1,4 +1,4 @@
-package ru.nsu.kinolist.bot.service;
+package ru.nsu.kinolist.bot.handlers.playlists;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,7 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.nsu.kinolist.bot.handlers.callbackquery.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.util.MessagesService;
 
 import java.io.Serializable;
 import java.util.ArrayList;

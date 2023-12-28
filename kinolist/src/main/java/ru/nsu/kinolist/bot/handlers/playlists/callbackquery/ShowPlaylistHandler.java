@@ -1,9 +1,11 @@
-package ru.nsu.kinolist.bot.handlers.callbackquery;
+package ru.nsu.kinolist.bot.handlers.playlists.callbackquery;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import ru.nsu.kinolist.bot.service.PlaylistsMenuService;
+import ru.nsu.kinolist.bot.handlers.CallbackQueryHandler;
+import ru.nsu.kinolist.bot.util.CallbackQueryType;
+import ru.nsu.kinolist.bot.handlers.playlists.PlaylistsMenuService;
 
 import java.io.Serializable;
 import java.util.List;

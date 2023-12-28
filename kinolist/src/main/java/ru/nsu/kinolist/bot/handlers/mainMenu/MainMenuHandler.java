@@ -1,10 +1,10 @@
-package ru.nsu.kinolist.bot.handlers;
+package ru.nsu.kinolist.bot.handlers.mainMenu;
 
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.nsu.kinolist.bot.cache.UserDataCache;
-import ru.nsu.kinolist.bot.service.MainMenuService;
+import ru.nsu.kinolist.bot.handlers.InputMessageHandler;
 import ru.nsu.kinolist.bot.util.BotState;
 
 import java.io.Serializable;
