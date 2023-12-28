@@ -19,6 +19,9 @@ build/
 target/
 dist/
 
+# Astah
+*.lock
+
 # Microsoft IDE
 .vscode/
 
