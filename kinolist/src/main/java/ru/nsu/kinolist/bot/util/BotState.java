@@ -1,0 +1,18 @@
+package ru.nsu.kinolist.bot.util;
+
+public enum BotState {
+    START,
+    SHOW_MAIN_MENU,
+    SHOW_HELP,
+    IDLE,
+    WISHLIST,
+    TRACKEDLIST,
+    VIEWEDLIST,
+    WISHLIST_ADD,
+    WISHLIST_TRANSFER,
+    WISHLIST_REMOVE,
+    VIEWEDLIST_ADD,
+    VIEWEDLIST_REMOVE,
+    TRACKEDLIST_ADD,
+    TRACKEDLIST_REMOVE,
+}
