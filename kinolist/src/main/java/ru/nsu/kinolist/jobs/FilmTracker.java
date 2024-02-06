@@ -45,11 +45,13 @@ public class FilmTracker {
 
     private final ArrayList<Film> checkedFilmsToday = new ArrayList<>();
 
-    @Scheduled(cron = "0 12 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     private void checkInfoForTrackedFilms() {
         List<Film> filmList = filmDAO.getAllFilmsFromTracking();
         for (Film film: filmList) {
-            if (checkedFilmsToday.contains(film)) {
+            System.out.println(" Фильм из отсл. " + film.getKinopoiskId());
+            if (checkedFilmsToday.stream().anyMatch(f -> f.getKinopoiskId().equals(film.getKinopoiskId()))) {
+                System.out.println(film.getKinopoiskId() + " уже чекали и отправили всем");
                 continue;
             }
             Optional<Episode> episode = getInfoByTrackedFilm(film);
@@ -70,7 +72,7 @@ public class FilmTracker {
 
     private Optional<Episode> getInfoByTrackedFilm(Film film) {
         SeasonsResponse seasonsResponse = filmApiService.sendRequestForSeries(film.getKinopoiskId());
-        System.out.println(film.getFilmName() + " " + seasonsResponse.getItems());
+        // System.out.println(film.getFilmName() + " " + seasonsResponse.getItems());
         for (Season season: seasonsResponse.getItems()) {
             for (Episode episode: season.getEpisodes()) {
                 if (episode.getReleaseDate() != null && episode.getReleaseDate().isEqual(LocalDate.now()) ) {
