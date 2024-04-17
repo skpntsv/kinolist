@@ -4,7 +4,7 @@
 - Java
 - Spring
 - Hibernate
-- Bot API
+- Telegram API
 - UML
 - Docker
 ## Состав команды:
