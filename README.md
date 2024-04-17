@@ -8,8 +8,8 @@
 - UML
 - Docker
 ## Состав команды:
-- [skpntsv](https://github.com/skpntsv) (телеграм бот)
-- [OHOHA3](https://github.com/OHOHA3) (базы данных)
-- [Fastl1n3](https://github.com/Fastl1n3) (контроллеры)
+- [skpntsv](https://github.com/skpntsv)
+- [OHOHA3](https://github.com/OHOHA3)
+- [Fastl1n3](https://github.com/Fastl1n3)
     
   Все занимались проектированием и работали с UML
