@@ -7,3 +7,9 @@
 - Bot API
 - UML
 - Docker
+## Состав команды:
+- [skpntsv](https://github.com/skpntsv) (телеграм бот)
+- [OHOHA3](https://github.com/OHOHA3) (базы данных)
+- [Fastl1n3](https://github.com/Fastl1n3) (контроллеры)
+    
+  Все занимались проектированием и работали с UML
